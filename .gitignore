@@ -1,0 +1,12 @@
+# General ignore
+.env
+node_modules
+*.log
+build/
+
+#Node JS
+logs
+
+# React TS
+
+# Solidity
