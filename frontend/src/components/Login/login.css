@@ -1,0 +1,27 @@
+.login-main-container {
+    display: flex;
+    flex-direction: column;
+}
+.login-main-container h3 {
+    margin: 1rem;
+}
+
+.login-options {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.login-options img {
+    width: 25%;
+}
+
+.login-options a {
+    text-decoration: none;
+    color: black;
+    border: 1px solid black;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+}
