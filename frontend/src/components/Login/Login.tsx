@@ -6,16 +6,16 @@ const Login = () => {
         <div className='login-main-container'>
             <h3>Connect using ...</h3>
             <div className="login-options">
-                <a href='#' className='option-smart-id'>
+                <a href='/smartid' className='option-smart-id'>
                     <img src={smartIdLogo} alt=''></img>
                 </a>
-                <a href='#' className='option-eParaksts'>
+                <a href='/eparaksts' className='option-eParaksts'>
                     <img src={eParakstsLogo} alt=''></img>
                 </a>
-                <a href='#' className='option-basic-authorization'>
+                <a href='/basic' className='option-basic-authorization'>
                     Basic Authorization
                 </a>
-                <a href='#' className='option-interenet-banking'>
+                <a href='/inbank' className='option-interenet-banking'>
                     Internet Banking Authentication
                 </a>
             </div>
