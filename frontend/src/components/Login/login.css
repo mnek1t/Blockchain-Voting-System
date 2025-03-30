@@ -1,0 +1,46 @@
+.login-main-container {
+    display: flex;
+    flex-direction: column;
+}
+.login-main-container h3 {
+    margin: 1rem;
+}
+
+.login-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 1rem;
+}
+
+.login-options img {
+    width: 10em;
+}
+
+.login-options > a.option {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: calc(50% -.5em);
+    min-height: 4em;
+}
+.option {
+    background: #ffff;
+    color: #012169;
+    text-decoration: none;
+    border: 1px solid #012169;
+    box-sizing: border-box;
+    font-weight: 500;
+    padding: 6px 15px 6px 15px;
+    user-select: none;
+    text-align: center;
+}
+
+.login-options>a {
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .login-options img {
+        width: 100%;
+    }
+}
