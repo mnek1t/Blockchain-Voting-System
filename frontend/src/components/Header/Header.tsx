@@ -1,5 +1,6 @@
 import './header.css';
 import logo from '../../assets/logo.png';
+import StandardButton from '../StandardButton/StandardButton';
 const Header = () => {
     return(
         <nav className="login-header">
@@ -16,8 +17,8 @@ const Header = () => {
             <div className="login-header-col-50">
                 <div className='right-padding'>
                     <div className="login-header-button-container">
-                        <button className="english-lang" title="English">EN</button>
-                        <button className="latvian-lang" title="Latvian">LV</button>
+                        <StandardButton label='EN' title="English"/>
+                        <StandardButton label='LV' title="Latvian"/>
                     </div>
                 </div>
             </div>

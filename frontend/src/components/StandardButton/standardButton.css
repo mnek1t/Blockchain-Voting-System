@@ -1,0 +1,26 @@
+.standard-button {
+    cursor: pointer;
+    border: 1px solid #012169;
+    display: inline-block;
+    font-weight: 500;
+    padding: 6px 15px 6px 15px;
+    text-align: center;
+    user-select: none;
+    color: #012169;
+    margin-left: 13px;
+    background-color: #fff;
+}
+
+.standard-button:hover {
+    color: #2f4984;
+}
+
+.button-blue {
+    background: #012169 !important;
+    border-color: #012169 !important;
+    color: white !important;
+}
+
+.button-blue:hover {
+    background-color: #2f4984 !important;
+}
