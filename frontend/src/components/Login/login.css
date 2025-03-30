@@ -25,3 +25,9 @@
     display: flex;
     justify-content: center;
 }
+
+@media (max-width: 768px) {
+    .login-options img {
+        width: 100%;
+    }
+}
