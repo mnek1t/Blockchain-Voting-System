@@ -1,7 +1,16 @@
 const express = require('express');
 require('dotenv').config()
+
+var cors = require('cors');
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+}
+
 const db = require('./database/connection.js')
 const app = express();
+
+app.use(cors(corsOptions))
 
 app.use(express.json())
 app.use('/api/auth', require("./routes/authRoute.js"));
