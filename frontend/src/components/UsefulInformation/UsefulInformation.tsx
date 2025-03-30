@@ -1,4 +1,5 @@
 import usefulData from "./usefulData";
+import "./usefulInformation.css"
 interface LinkData {
     url: string;
     label: string;
@@ -17,18 +18,18 @@ const UsefulInformation = () => {
     }
 
     return(
-        <>
-        <h2>Useful Information</h2>
-        <ul>
-            {usefulData.map((item, index) => (
-                <>
-                    <li key={index}>{renderTextWithInternalReferences(item.text, item.links)}</li>
-                    <hr/>
-                </>
-            ))}
-        </ul>
-        <br/><br/>
-        </>
+        <div className="usefulinfo-container">
+            <h2>Useful Information</h2>
+            <ul>
+                {usefulData.map((item, index) => (
+                    <>
+                        <li key={index}>{renderTextWithInternalReferences(item.text, item.links)}</li>
+                        <hr/>
+                    </>
+                ))}
+            </ul>
+            <br/><br/>
+        </div>
     );
 }
 
