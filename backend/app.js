@@ -1,11 +1,11 @@
 const express = require('express');
-
+require('dotenv').config()
+const db = require('./database/connection.js')
 const app = express();
 
-app.get('/', (req, res) => { 
-    res.send('A simple Node App is running on this server') 
-    res.end() 
-});
+app.use(express.json())
+app.use('/api/auth', require("./routes/authRoute.js"));
+console.log(process.env.PORT)
 
 const PORT = process.env.PORT || 5100;
 
