@@ -1,21 +1,29 @@
+.login-main-container {
+    padding: 0 15px;
+}
+
+.login-main-container a {
+    margin: 1rem;
+}
+
 .basic-login-form {
     display: flex;
     flex-direction: column;
-    margin-top: 0em;
     unicode-bidi: isolate;
+    padding: 0 15px;
 }
 
 .form-buttons {
     display: flex;
     gap: 0.5rem;
     width: 100%;
+    padding-top: 10px;
 }
 
 .form-input {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding: .375rem .75rem;
     width: 100%;
     line-height: 1.5;
     background-color: #fff;

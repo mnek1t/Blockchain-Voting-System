@@ -32,8 +32,8 @@ const BasicLogin = () => {
 
     return(
         <div className='login-main-container'>
-            <a href="/"> &lt; To home page</a>
-            <h2>Connect To</h2>
+            <a href="/">&lt; To home page</a>
+            <h3>Connect To</h3>
             <form className="basic-login-form" onSubmit={(e) => handleConnectTo(e)}>
                 <div className='form-input'>
                     <label htmlFor="username">Username</label>
