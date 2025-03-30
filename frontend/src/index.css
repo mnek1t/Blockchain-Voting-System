@@ -5,7 +5,9 @@
 a {
     color: #012169;
 }
-
+a:hover {
+    color: #2f4984;
+}
 .app-container {
     margin: auto;
     margin-top: 5%;
