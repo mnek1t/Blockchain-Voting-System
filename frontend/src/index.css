@@ -1,3 +1,11 @@
+* {
+    font-family: sans-serif;
+}
+
+a {
+    color: #012169;
+}
+
 .app-container {
     margin: auto;
     margin-top: 5%;
