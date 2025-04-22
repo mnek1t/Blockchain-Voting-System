@@ -18,21 +18,42 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         const token = jwt.sign({voterId: voter.voter_id}, process.env.JWT_SECRET_KEY, { expiresIn: '1h'})
+        res.cookie('BVS', token, {
+            httpOnly: true,
+            sameSite: 'strict',
+            secure: false,
+            maxAge: 3600000
+        })
         res.status(201).json({
-            token: token
+            message: 'Login Successful'
         });
     } catch(err) {
         res.status(500).json({ error: 'Login failed' });
     }
 }
 
-// @desc: Auth controller for user logout session
+// @desc: Logout method for user authentication
 // @access: private
-// @route: POST /api/auth/login 
+// @route: POST /api/auth/logout 
 const logout = async (req, res) => {
-    res.status(201).json({
-        message: 'Logout successful'
-    });
+    try {
+        validateToken(req);
+        res.clearCookie('BVS', { httpOnly: true, sameSite: 'strict', secure: false });
+        res.status(201).json({ message: 'Logout successful' });
+    } catch (err) {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+}
+// @desc: Validate JWT Token for user authentication
+// @access: private
+// @route: POST /api/auth/validateToken 
+const validateToken = (req) => {
+    const token = req.cookies.BVS;
+    if (!token) {
+        throw new Error('Unauthorized');
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    req.voterId = decoded.voterId;
 }
 
-module.exports = {login, logout};
+module.exports = {login, logout, validateToken};
