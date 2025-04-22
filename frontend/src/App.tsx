@@ -4,6 +4,7 @@ import SmartIdPage from './pages/SmartIdPage';
 import EparakstsLoginPage from './pages/EparakstsLoginPage';
 import BasicLoginPage from './pages/BasicLoginPage';
 import InternetBankingPage from './pages/InternetBankingPage';
+import OrganizeElectionPage from './pages/OrganizeElectionPage';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 function App() {
@@ -15,6 +16,8 @@ function App() {
         <Route path="/eparaksts" element={<EparakstsLoginPage />} />
         <Route path="/basic" element={<BasicLoginPage />} />
         <Route path="/inbank" element={<InternetBankingPage />} />
+        <Route path="/election/prep" element={<OrganizeElectionPage />} />
+
       </Routes>
     </BrowserRouter>
   );

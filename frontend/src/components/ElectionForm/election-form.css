@@ -1,0 +1,59 @@
+.election-form-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.election-form-candidate {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.election-form-input-group {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.election-form-dates {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.election-form-dates input {
+    cursor: pointer;
+    height: 2rem;
+    box-sizing: border-box;
+}
+
+.election-form-input {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    line-height: 1.5;
+    background-color: #fff;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    flex: 1;
+}
+
+.election-form-input label {
+    cursor: pointer;
+}
+
+.election-form-input input {
+    box-sizing: border-box;
+    height: 2rem;
+    width: 100%;
+    text-indent: 2px;
+    font-size: 16px;
+    border: 1px solid hsl(0, 0%, 68%);
+    outline: none;
+}
+
+.election-form-buttons-group {
+    display: flex;
+    gap: 1rem;
+}
