@@ -7,7 +7,6 @@ var corsOptions = {
     optionsSuccessStatus: 200 
 }
 
-const db = require('./database/connection.js')
 const app = express();
 
 app.use(cors(corsOptions))
