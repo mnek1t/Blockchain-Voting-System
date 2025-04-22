@@ -6,9 +6,6 @@
     flex-wrap: wrap;
     width: 100%;
     background: none;
-    padding: 0 15px;
-    padding-top: .3em;
-    padding-bottom: 3.7em;
     margin-top: 3em;
 }
 
@@ -54,11 +51,11 @@
 
 .bvs-version {
     position: absolute;
-    bottom: 1em;
-    clear: both;
-    float: left;
-    padding: 0 15px;
+    bottom: -1rem;
+    text-align: center;
     width: 100%;
+    font-size: 14px;
+    color: #333;
 }
 
 @media (max-width: 768px) {
