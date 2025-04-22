@@ -1,11 +1,18 @@
 const express = require('express');
+require('dotenv').config()
+
+var cors = require('cors');
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+}
 
 const app = express();
 
-app.get('/', (req, res) => { 
-    res.send('A simple Node App is running on this server') 
-    res.end() 
-});
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use('/api/auth', require("./routes/authRoute.js"));
+console.log(process.env.PORT)
 
 const PORT = process.env.PORT || 5100;
 
