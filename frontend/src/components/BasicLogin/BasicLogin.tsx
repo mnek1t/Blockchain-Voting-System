@@ -6,12 +6,13 @@ import { BasicLoginCredentials } from '../../api/auth/blockchain-api-definitions
 
 const BasicLogin = () => {
     const [loginCreds, setLoginCreds] = useState<BasicLoginCredentials>({
-        username: "",
+        personalNumber: "",
         password: ""
     });
 
     const handleConnectTo = (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(loginCreds)
         basicLogin(loginCreds)
         .then((data) => {
             console.log(data)
@@ -36,8 +37,8 @@ const BasicLogin = () => {
             <h3>Connect To</h3>
             <form className="basic-login-form" onSubmit={(e) => handleConnectTo(e)}>
                 <div className='form-input'>
-                    <label htmlFor="username">Username</label>
-                    <input id="username" name="username" onChange={handleInputChange} autoComplete="off"></input>
+                    <label htmlFor="personalNumber">Personal Number</label>
+                    <input id="personalNumber" name="personalNumber" onChange={handleInputChange} autoComplete="off"></input>
                 </div>
                 <div className='form-input'>
                     <label htmlFor="userPassword">Password</label>

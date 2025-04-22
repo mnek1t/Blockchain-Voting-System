@@ -1,4 +1,4 @@
 export interface BasicLoginCredentials {
-    username: string,
+    personalNumber: string,
     password: string
 }

@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios'
 import { BasicLoginCredentials } from './blockchain-api-definitions'
 
-const basicLogin = async ({username, password}: BasicLoginCredentials) => {
+const basicLogin = async ({personalNumber, password}: BasicLoginCredentials) => {
     try{
         console.log(process.env.REACT_APP_NODE_URL)
-        const response : AxiosResponse =  await axios.post(process.env.REACT_APP_NODE_URL + "/login", {username, password});
+        const response : AxiosResponse =  await axios.post(process.env.REACT_APP_NODE_URL + "/login", {personalNumber, password},  { withCredentials: true });
         if(response.status === 201) {
             return response.data;
         } else {
@@ -18,7 +18,7 @@ const basicLogin = async ({username, password}: BasicLoginCredentials) => {
 
 const logout = async () => {
     try {
-        const response : AxiosResponse = await axios.post(process.env.NODE_URL + "/logout", {}, {withCredentials: true});
+        const response : AxiosResponse = await axios.post(process.env.REACT_APP_NODE_URL + "/logout", {}, {withCredentials: true});
         if(response.status === 201) {
             return response.data;
         } else {
@@ -29,4 +29,17 @@ const logout = async () => {
     }
 }
 
-export {basicLogin, logout}
+const validateToken = async() => {
+    try {
+        const response : AxiosResponse = await axios.get(process.env.REACT_APP_NODE_URL + "/validateToken", {withCredentials: true});
+        if(response.status === 200) {
+            console.log("Token is valid")
+            return true;
+        } else {
+            throw new Error("Token is not valid");
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+export {basicLogin, logout, validateToken}
