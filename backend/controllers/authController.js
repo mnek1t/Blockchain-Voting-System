@@ -17,7 +17,7 @@ const login = async (req, res) => {
         if(!isMatch){
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const token = jwt.sign({voterId: voter.voter_id}, process.env.JWT_SECRET_KEY, { expiresIn: '1h'})
+        const token = jwt.sign({voterId: voter.voter_id, role: voter.role}, process.env.JWT_SECRET_KEY, { expiresIn: '1h'})
         res.cookie('BVS', token, {
             httpOnly: true,
             sameSite: 'strict',
