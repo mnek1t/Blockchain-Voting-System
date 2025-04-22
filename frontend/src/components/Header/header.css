@@ -1,0 +1,70 @@
+.login-header {
+    display: flex;
+    flex: 0 0 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.login-header-col-50 {
+    display: flex;
+    flex: 0 0 50%;
+    max-width: 50%;
+    box-sizing: border-box;
+    flex-direction: column;
+}
+
+.left-padding {
+    padding-left:1rem;
+}
+
+.right-padding {
+    padding-right:1rem;
+}
+
+.login-header-logo-holder {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+.login-header-logo-holder img {
+    width: 25%;
+}
+
+.login-header-title-holder {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+.login-header-button-container {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: flex-end;
+    float: right;
+}
+
+.login-header-button-container button {
+    cursor: pointer;
+    width: 3rem;
+    height: 2rem;
+}
+
+.separator {
+    height: 4px; 
+    background: linear-gradient(to right, rgba(36, 37, 102, 0), rgb(36, 37, 102), rgba(36, 37, 102, 0)); 
+    margin: 40px 0;
+}
+
+@media (max-width: 768px) {
+    .login-header-col-50 {
+        display: flex;
+        flex: 0 0 50%;
+        max-width: 50%;
+        box-sizing: border-box;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .login-header-logo-holder img {
+        width: 100%;
+    }
+}

@@ -1,0 +1,44 @@
+.login-main-container {
+    padding: 0 15px;
+}
+
+.login-main-container a {
+    margin: 1rem;
+}
+
+.basic-login-form {
+    display: flex;
+    flex-direction: column;
+    unicode-bidi: isolate;
+    padding: 0 15px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    padding-top: 10px;
+}
+
+.form-input {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    line-height: 1.5;
+    background-color: #fff;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-input label {
+    cursor: pointer;
+}
+
+.form-input input {
+    width: 48rem;
+    height: 2rem;
+    text-indent: 2px;
+    font-size: 16px;
+    border: 1px solid hsl(0, 0%, 68%);
+    outline: none;
+}

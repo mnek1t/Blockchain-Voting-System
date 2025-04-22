@@ -1,0 +1,16 @@
+* {
+    font-family: sans-serif;
+}
+
+a {
+    color: #012169;
+}
+a:hover {
+    color: #2f4984;
+}
+.app-container {
+    margin: auto;
+    margin-top: 5%;
+    width: 85%;
+    max-width: 1200px;
+}
