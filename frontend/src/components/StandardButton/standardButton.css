@@ -10,6 +10,13 @@
     background-color: #fff;
 }
 
+.disabled {
+    background-color: #f0f0f0;
+    color: #b0b0b0;
+    border-color: #b0b0b0;
+    pointer-events: none;
+}
+
 .standard-button:hover {
     color: #2f4984;
 }
@@ -17,6 +24,12 @@
 .button-blue {
     background: #012169 !important;
     border-color: #012169 !important;
+    color: white !important;
+}
+
+.button-red {
+    background: #d20a14 !important;
+    border-color: #d20a14 !important;
     color: white !important;
 }
 
