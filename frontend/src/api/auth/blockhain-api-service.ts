@@ -3,7 +3,8 @@ import { BasicLoginCredentials } from './blockchain-api-definitions'
 
 const basicLogin = async ({username, password}: BasicLoginCredentials) => {
     try{
-        const response : AxiosResponse =  await axios.post(process.env.NODE_URL + "/login", {username, password});
+        console.log(process.env.REACT_APP_NODE_URL)
+        const response : AxiosResponse =  await axios.post(process.env.REACT_APP_NODE_URL + "/login", {username, password});
         if(response.status === 201) {
             return response.data;
         } else {
