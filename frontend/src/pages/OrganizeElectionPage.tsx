@@ -120,7 +120,7 @@ const OrganizeElectionPage = () => {
         <Header/>
         <hr/>
         <h6>This is Admin view with strict access. Please read instructions before starting the election. </h6>
-        <a href="/home/admin">&lt; To home page</a>
+        <a href="/admin/home">&lt; To home page</a>
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
             <div className="election-form-dates">
                 <div className="election-form-input">   
