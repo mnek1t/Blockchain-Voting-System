@@ -6,6 +6,8 @@ import BasicLoginPage from './pages/BasicLoginPage';
 import InternetBankingPage from './pages/InternetBankingPage';
 import OrganizeElectionPage from './pages/OrganizeElectionPage';
 import AdminHomePage from './pages/AdminHomePage';
+import VoterHomePage from './pages/VoterHomePage';
+import VotingPage from './pages/VotingPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
         <Route path="/basic" element={<BasicLoginPage />} />
         <Route path="/inbank" element={<InternetBankingPage />} />
         <Route path="/election/prep" element={<OrganizeElectionPage />} />
-        <Route path="/home/admin" element={<AdminHomePage />} />
+        <Route path="/admin/home" element={<AdminHomePage />} />
+        <Route path="/voter/home" element={<VoterHomePage />} />
+        <Route path="/voter/voting" element={<VotingPage />} />
       </Routes>
     </BrowserRouter>
   );
