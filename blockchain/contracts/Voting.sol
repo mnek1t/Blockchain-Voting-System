@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity >=0.4.22 <0.9.0;
 
 contract Voting {
     struct Candidate {
@@ -13,6 +13,7 @@ contract Voting {
     // 2. duration of voting
     uint private startTime;
     uint private endTime;
+    uint private revealEndTime;
 
     bool private isVotingFinished;
 
@@ -48,6 +49,7 @@ contract Voting {
     }
     // initialize all candidates and duration of voting. MUST be available only for the owner of the contract - adming - government.
     constructor(string[] memory _candidatesNames, uint _duration, address payable _governmentAddressBudget) {
+        require(_candidatesNames.length > 0, "Candidates required");
         owner = msg.sender;
         governmentAddressBudget = _governmentAddressBudget;
         for(uint i = 0; i < _candidatesNames.length; i++) {
@@ -56,7 +58,6 @@ contract Voting {
         startTime = block.timestamp;
         endTime =  startTime + _duration;
     }
-
     function vote(bytes32 _voteHash) external payable onlyDuringElectionTime {
         require(!hasVoted[msg.sender], "You have already voted");
         require(msg.value == depositAmount, "Deposit amount is not correct");
@@ -67,8 +68,9 @@ contract Voting {
     }
 
     function endElection() external onlyAfterElectionTime {
-        require(!isVotingFinished, "Voting si already finished");
+        require(!isVotingFinished, "Voting is already finished");
         isVotingFinished = true;
+        revealEndTime = block.timestamp + 1 days;
         emit VoteEnded();
     }
 
@@ -86,6 +88,7 @@ contract Voting {
 
     function withdrawToGovernmentBudget() external onlyOwner onlyAfterElectionTime {
         require(isVotingFinished, "Voting is not finished yet");
+        require(block.timestamp > revealEndTime, "Reveal phase is not finished yet");
         governmentAddressBudget.transfer(address(this).balance);
     }
 
