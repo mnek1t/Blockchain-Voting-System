@@ -42,6 +42,11 @@ const Voter  = sequelizeConnection.define('Voter', {
     hashed_password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    role: {
+        type: DataTypes.ENUM('voter', 'admin'),
+        allowNull: false,
+        defaultValue: 'voter'
     }
 }, {
     tableName: 'voters',
