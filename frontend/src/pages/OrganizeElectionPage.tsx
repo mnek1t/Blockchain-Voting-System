@@ -4,7 +4,7 @@ import Contact from "../components/Contact/Contact";
 import ImageUploader from "../components/ImageUploader/ImageUploader";
 import '../components/ElectionForm/election-form.css'
 import StandardButton from "../components/StandardButton/StandardButton";
-
+import { createElection } from "../api/blockchain/ethers";
 type Candidate = {
     id: number;
     name: string;
@@ -100,19 +100,13 @@ const OrganizeElectionPage = () => {
             alert("Please fill out all candidate fields.");
             return;
         }
-        const payload = {
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString(),
-            candidates: candidates.map(({ id, name, party, image }) => ({
-              id,
-              name,
-              party,
-              image 
-            }))
-        };
-
-        console.log("Submitting election:", payload);
-        alert("Election submitted!");
+        createElection(['Alice', 'Bob'], 86400, '0xE9DD3570aEd496fde77EE174D7DF636e334F17FE')
+        .then((address) => {
+            console.log(address)
+        })
+        .catch((err) => {
+            console.error(err)
+        })
     }
 
     return(
