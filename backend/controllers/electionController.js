@@ -48,15 +48,45 @@ const saveElection = async (req, res) => {
 
 // @desc: Get election by id
 // @access: private
-// @route: POST /api/election/:id
-const getElection = async (req, res) => {
-    res.status(505).json({ error: 'Not implemented' });
+// @route: GET /api/election/:id
+const getElectionById = async (req, res) => {
+    const decoded = validateToken(req);
+    console.log(decoded);
+    const election_id = req.params.id;
+    try {
+        const election = await Election.findOne({
+            where: { election_id: election_id },
+            include: Candidate,
+        });
+
+        if (!election) return res.status(404).json({ error: 'Election not found' });
+
+        res.json(election);
+    } catch (err) {
+        console.error('Error fetching election:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
 }
+
 // @desc: Get all election announced
 // @access: private 
 // @route: GET /api/election/all
-const getAllElections = (req, res) => {
-    res.status(505).json({ error: 'Not implemented' });
+const getAllElections = async (req, res) => {
+    const decoded = validateToken(req);
+    console.log(decoded)
+    try {
+        const elections = await Election.findAll({
+            where: { status: 'active' },
+            include: Candidate,
+        });
+
+        if (!elections) return res.status(404).json({ error: 'Elections not found' });
+
+        res.json(elections);
+    } catch (err) {
+        console.error('Error fetching election:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
 }
 
-module.exports = {saveElection, getElection, getAllElections};
+module.exports = {saveElection, getElectionById, getAllElections};
