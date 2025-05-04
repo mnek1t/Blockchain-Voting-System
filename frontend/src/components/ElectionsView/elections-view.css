@@ -1,0 +1,45 @@
+.elections-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.election-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.election-table th, .election-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.election-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.election-table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.election-table tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+.election-table ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.election-table ul li {
+    margin-bottom: 5px;
+}
+
+.election-table ul li::before {
+    content: "• ";
+    color: #2d87f0;
+}
