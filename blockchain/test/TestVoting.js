@@ -3,13 +3,14 @@ const { time } = require('@openzeppelin/test-helpers');
 
 contract("Voting", accounts => {
     let votingContractInstance;
-    let candidates = ["Alice", "Bob"];
+    const candidates = [
+        { id: "82d0518d-5ccf-4646-a00c-9422d518cb98", name: "Alice", party: "Green", voteCount: 0 },
+        { id: "47d5c0db-8665-4b6c-bc7e-99fef84f1fde", name: "Bob", party: "Blue", voteCount: 0 }
+    ];
     const deposit = web3.utils.toWei("0.01", "ether")
     let owner = accounts[0]
     let governmentAcc = accounts[1]
     let voter1 = accounts[2]
-    let voter2 = accounts[3]
-    let admin = accounts[4];
     const duration = 1000;
     beforeEach(async () => {
         votingContractInstance = await Voting.new(candidates, duration, governmentAcc, {from: owner});
@@ -66,6 +67,17 @@ contract("Voting", accounts => {
             assert.fail("Deposit is invalid")
         } catch(err) {
             assert(err.message.includes("Deposit amount is not correct"));
+        }
+    });
+
+    it('should not allow government account to participate in voting', async() => {
+        var candidateId = 0 // selected candidate immmitation
+        const salt = 'secret'
+        const voteHash = web3.utils.soliditySha3(candidateId, salt)
+        try {
+            await votingContractInstance.vote(voteHash, {from: governmentAcc, value: deposit})
+        } catch(err) {
+            assert(err.message.includes("Government Account cannot participate in voting!"));
         }
     })
 
