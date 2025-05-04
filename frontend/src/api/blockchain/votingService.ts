@@ -1,9 +1,9 @@
 import { getContract } from "./ethers";
 import { keccak256, AbiCoder, parseEther } from "ethers";
 
-const vote = async (contractAddress: string, candidateId: number, salt: string) => {
+const vote = async (contractAddress: string, candidateId: string, salt: string) => {
     const contract = await getContract(contractAddress);
-    const encoded = AbiCoder.defaultAbiCoder().encode(["uint256", "string"], [candidateId, salt]);
+    const encoded = AbiCoder.defaultAbiCoder().encode(["string", "string"], [candidateId, salt]);
     const voteHash = keccak256(encoded);
     const tx = await contract.vote(voteHash, {
         value: parseEther("0.01"),
@@ -17,7 +17,7 @@ const endElection = async (contractAddress: string) => {
     await tx.wait();
 };
 
-const revealVote = async (contractAddress: string, candidateId: number, salt: string) => {
+const revealVote = async (contractAddress: string, candidateId: string, salt: string) => {
     const contract = await getContract(contractAddress);
     const tx = await contract.revealVote(candidateId, salt);
     await tx.wait();
