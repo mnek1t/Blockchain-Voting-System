@@ -1,28 +1,39 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import Header from "../components/Header/Header";
 import Contact from "../components/Contact/Contact";
 import ImageUploader from "../components/ImageUploader/ImageUploader";
 import '../components/ElectionForm/election-form.css'
 import StandardButton from "../components/StandardButton/StandardButton";
-import { createElection } from "../api/blockchain/ethers";
+import { createElection, SolidityCandidates } from "../api/blockchain/ethers";
+import { saveElection } from "../api/offChain/db-api-service"
 type Candidate = {
-    id: number;
+    id: string;
     name: string;
     party: string;
     image: File | null;
     imagePreview: string;
   };
-
+type DurationUnit = 'Days' | 'Weeks' | 'Months';
 const OrganizeElectionPage = () => {
     const [candidates, setCandidates] = useState<Candidate[]>([{
-        id: Date.now(),
+        id: uuidv4(),
         name: "",
         party: "",
         image: null,
         imagePreview: ""
       }]);
-    const [startDate, setStartDate] = useState<Date>();
-    const [endDate, setEndDate] = useState<Date>();
+    const unitToSeconds :Record<DurationUnit, number> = {
+        'Days': 86400,
+        'Weeks': 604800,
+        'Months': 2628000
+    };
+    const [title, setTitle] = useState<string>("");
+    const [duration, setDuration] = useState(86400);
+    const [durationMeasurement, setDurationMeasurement] = useState<DurationUnit>('Days');
+
+    const [customDuration, setCustomDuration] = useState(0);
+
     const [candidateName, setCandidateName] = useState<string>();
     const [candidateParty, setCandidateParty] = useState<string>();
 
@@ -32,12 +43,10 @@ const OrganizeElectionPage = () => {
             const parsed = JSON.parse(draft);
             setCandidateName(parsed.candidateName || "");
             setCandidateParty(parsed.candidateParty || "");
-            setStartDate(parsed.startDate || "");
-            setEndDate(parsed.endDate || "");
         }
     }, [])
 
-    function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, id: number) {
+    function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>, id: string) {
         const { files } = event.target;
         if (files && files[0]) {
           const reader = new FileReader();
@@ -53,11 +62,10 @@ const OrganizeElectionPage = () => {
     }
 
     function handleSaveDraft() {
+        console.log(candidates.map(c => c.imagePreview))
         const draft = {
             candidateName,
             candidateParty,
-            startDate,
-            endDate
         };
         localStorage.setItem("electionDraft", JSON.stringify(draft));
         alert("Draft saved!");
@@ -65,11 +73,11 @@ const OrganizeElectionPage = () => {
     
     function handleAddCandidate() {
         if(candidates.length < Number(process.env.REACT_APP_MAX_CANDIDATE_AMOUNT)) {
-            setCandidates([...candidates, { id: Date.now(), name: "", party: "", image: null, imagePreview: ""}]);
+            setCandidates([...candidates, { id: uuidv4(), name: "", party: "", image: null, imagePreview: ""}]);
         }
     }
 
-    function handleCandidateChange(id: number, field: string, value: string) {
+    function handleCandidateChange(id: string, field: string, value: string) {
         setCandidates(prev =>
           prev.map(c =>
             c.id === id ? { ...c, [field]: value } : c
@@ -77,19 +85,19 @@ const OrganizeElectionPage = () => {
         );
     }
 
-    function handleRemoveCandidate(id: number) {
+    function handleRemoveCandidate(id: string) {
         if(candidates.length > 1) {
             setCandidates(candidates.filter(c => c.id !== id));
         }
     }
 
     function handleAnnounceElection() {
-        if (!startDate || !endDate) {
-            alert("Please select start and end dates for the election.");
+        if(!title || title === '') {
+            alert("Provide a title for election.");
             return;
         }
-        if (startDate >= endDate) {
-            alert("Start date must be before end date.");
+        if (duration < 86400 && customDuration < 0) {
+            alert("Minimum duration of voring is 1 day!");
             return;
         }
         if(candidates.length < 2) {
@@ -100,9 +108,37 @@ const OrganizeElectionPage = () => {
             alert("Please fill out all candidate fields.");
             return;
         }
-        createElection(['Alice', 'Bob'], 86400, '0xE9DD3570aEd496fde77EE174D7DF636e334F17FE')
-        .then((address) => {
-            console.log(address)
+        const candidatesPayload = candidates.map(candidate => ({
+            id: candidate.id,
+            name: candidate.name,
+            party: candidate.party,
+            image: candidate.imagePreview
+        }));
+        const finalDuration = duration === 0 ? customDuration * unitToSeconds[durationMeasurement] : duration;
+        console.log('candidatesPayload', candidatesPayload)
+        const contractCandidatesInput : SolidityCandidates[] = candidates.map(candidate => ({
+            id: candidate.id,
+            name: candidate.name,
+            voteCount: 0
+        }));
+        createElection(contractCandidatesInput, finalDuration, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS)
+        .then((contractAddress) => {
+            console.log(contractAddress)
+
+            saveElection({
+                contractAddress: contractAddress, 
+                title: title, 
+                candidates: candidatesPayload, 
+                duration: finalDuration, 
+                status: 'active'
+            })
+            .then((data) => {
+                console.log(data);
+                alert('Election is announced and saved!')
+            })
+            .catch((err) => {
+                console.error(err)
+            })
         })
         .catch((err) => {
             console.error(err)
@@ -116,16 +152,49 @@ const OrganizeElectionPage = () => {
         <h6>This is Admin view with strict access. Please read instructions before starting the election. </h6>
         <a href="/admin/home">&lt; To home page</a>
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
-            <div className="election-form-dates">
-                <div className="election-form-input">   
-                    <label htmlFor="start-date-input">Start date</label>
-                    <input id="start-date-input" type="date" value={startDate ? startDate.toISOString().substring(0, 10) : ""} onChange={(e) => setStartDate(new Date(e.target.value))}></input>
-                </div>
-                <div className="election-form-input">
-                    <label htmlFor="end-date-input">End date</label>
-                    <input id="end-date-input" type="date" value={endDate ? endDate.toISOString().substring(0, 10) : ""} onChange={(e) => setEndDate(new Date(e.target.value))}></input>
-                </div>
+        <div className="election-title">
+            <div className="election-form-input">   
+                <label htmlFor="election-title-input">Title</label>
+                <input id="election-title-input" value={title ? title : ""} onChange={(e) => setTitle(e.target.value)}></input>
             </div>
+        </div>
+        <div className="election-form-dates">
+            <div className="election-form-input">
+                <label htmlFor="duration-select">Voting Duration</label>
+                <select
+                    id="duration-select"
+                    value={duration}
+                    onChange={(e) => setDuration(parseInt(e.target.value))}
+                >
+                    <option value={86400}>1 Day</option>
+                    <option value={604800}>1 Week</option>
+                    <option value={2628000}>1 Month</option>
+                    <option value={0}>Custom (enter manually)</option>
+                </select>
+            </div>
+            {
+                duration === 0 && 
+                <div className="election-custom-duration">
+                    <div className="election-form-input">   
+                        <label htmlFor="election-custom-duration-input">Unit</label>
+                        <input id="election-custom-duration-input" type="number" value={customDuration} onChange={(e) => setCustomDuration(Number(e.target.value))} min={1} max={10} step={1}></input>
+                    </div>
+                    <div className="election-form-input">
+                        <label htmlFor="duration-select">Measurement</label>
+                        <select
+                            id="duration-select"
+                            value={durationMeasurement}
+                            onChange={(e) => setDurationMeasurement(e.target.value as DurationUnit)}
+                        >
+                            <option value={'Days'}>{'Day' + (customDuration === 1 ? '' : 's')}</option>
+                            <option value={'Weeks'}>{'Week' + (customDuration === 1 ? '' : 's')}</option>
+                            <option value={'Months'}>{'Month' + (customDuration === 1 ? '' : 's')}</option>
+                        </select>
+                    </div>
+                </div>
+                
+            }
+        </div>
             {candidates.map((candidate) => (
                     <div className="election-form-candidate" key={candidate.id}>
                         <StandardButton label="X" type="button" onClick={() => handleRemoveCandidate(candidate.id)} disabled={candidates.length === 1}></StandardButton>
