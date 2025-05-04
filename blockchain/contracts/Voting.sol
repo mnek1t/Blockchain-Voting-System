@@ -26,7 +26,7 @@ contract Voting {
     mapping(address => bytes32) private votesHashes;
 
     event VoteCommitted(address voter);
-    event VoteRevealed(address voter, uint candidateId);
+    event VoteRevealed(address voter, string candidateId);
     event VoteEnded();
 
     modifier onlyDuringElectionTime() {
@@ -88,12 +88,20 @@ contract Voting {
         emit VoteEnded();
     }
 
-    function revealVote(uint _candidateId, string memory _salt) external onlyDuringRevealPhase {
+    function revealVote(string memory _candidateId, string memory _salt) external onlyDuringRevealPhase {
         require(hasVoted[msg.sender], "You have not voted yet");
         require(!hasRevealed[msg.sender], "Vote already revealed");
         require(keccak256(abi.encodePacked(_candidateId, _salt)) == votesHashes[msg.sender], "Vote hash is not correct");
 
-        candidates[_candidateId].voteCount++;
+        bool found = false;
+        for(uint i = 0; i < candidates.length; i++) {
+            if(keccak256(abi.encodePacked(candidates[i].id)) == keccak256(abi.encodePacked(_candidateId))) {
+                found = true;
+                candidates[i].voteCount++;
+                break;
+            }
+        }
+        require(found == true, 'Candidate does not exist with this id!');
         hasRevealed[msg.sender] = true;
         payable(msg.sender).transfer(depositAmount);
 

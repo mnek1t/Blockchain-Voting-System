@@ -25,7 +25,7 @@ contract("Voting", accounts => {
     });
 
     it("should allow user commit a vote with deposit withdrawal", async () => {
-        var candidateId = 0 // selected candidate immmitation
+        var candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98"; // selected candidate immmitation
         const salt = 'secret'
         const voteHash = web3.utils.soliditySha3(candidateId, salt)
 
@@ -34,7 +34,7 @@ contract("Voting", accounts => {
     })
 
     it("should not allow user commit a vote twice", async () => {
-        var candidateId = 0 
+        var candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret'
         const voteHash  = web3.utils.soliditySha3(candidateId, salt)
         await votingContractInstance.vote(voteHash, {from: voter1, value: deposit})
@@ -48,7 +48,7 @@ contract("Voting", accounts => {
     })
 
     it("should not allow user commit a vote without proper deposit", async () => {
-        var candidateId = 0 
+        var candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret'
         const voteHash = web3.utils.soliditySha3(candidateId, salt)
         let invalidDeposit = web3.utils.toWei("0.02", "ether")
@@ -71,9 +71,9 @@ contract("Voting", accounts => {
     });
 
     it('should not allow government account to participate in voting', async() => {
-        var candidateId = 0 // selected candidate immmitation
-        const salt = 'secret'
-        const voteHash = web3.utils.soliditySha3(candidateId, salt)
+        var candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98"; // selected candidate immmitation
+        const salt = 'secret';
+        const voteHash = web3.utils.soliditySha3(candidateId, salt);
         try {
             await votingContractInstance.vote(voteHash, {from: governmentAcc, value: deposit})
         } catch(err) {
@@ -99,7 +99,7 @@ contract("Voting", accounts => {
     })
 
     it('should reveal a vote only after election end', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         const voteHash = web3.utils.soliditySha3(candidateId, salt);
 
@@ -117,7 +117,7 @@ contract("Voting", accounts => {
     })
 
     it('should not reveal vote without voting', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         await time.increase(duration + 1);
         await votingContractInstance.endElection();
@@ -131,7 +131,7 @@ contract("Voting", accounts => {
     })
 
     it('should not allow revealing before election ends', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         const voteHash = web3.utils.soliditySha3(candidateId, salt);
     
@@ -146,7 +146,7 @@ contract("Voting", accounts => {
     });
 
     it('should not reveal vote twice', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         const voteHash = web3.utils.soliditySha3(candidateId, salt);
         await votingContractInstance.vote(voteHash, {from: voter1, value: deposit})
@@ -163,7 +163,7 @@ contract("Voting", accounts => {
     })
 
     it('should not reveal vote if salt or candidateId is wrong', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         const voteHash = web3.utils.soliditySha3(candidateId, salt);
 
@@ -190,7 +190,7 @@ contract("Voting", accounts => {
     })
 
     it('owner can withdraw remaining funds to government budget', async () => {
-        const candidateId = 0;
+        const candidateId = "82d0518d-5ccf-4646-a00c-9422d518cb98";
         const salt = 'secret';
         const voteHash = web3.utils.soliditySha3(candidateId, salt);
     
