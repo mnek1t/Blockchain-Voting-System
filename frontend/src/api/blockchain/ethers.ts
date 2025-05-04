@@ -9,8 +9,14 @@ declare global {
     }
 }
 
+export interface SolidityCandidates {
+    id: string,
+    name: string,
+    voteCount: number
+}
+
 const createElection = async(
-    candidates: string[], 
+    candidates: SolidityCandidates[], 
     durationInSeconds: number, 
     governmentBudgetAddress: string = '0xE9DD3570aEd496fde77EE174D7DF636e334F17FE'
 ) : Promise<string> => {
@@ -34,8 +40,16 @@ const createElection = async(
 const connectWallet = async (): Promise<string | undefined> => {
     if (window.ethereum) {
         try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
+
+            window.ethereum.on('accountsChanged', (accounts: string[]) => {
+                if (accounts.length > 0) {
+                    window.location.reload(); // or use setState to update UI
+                }
+            });
             return signer.address;
         } catch (err) {
             console.log('User rejected the request', err);
