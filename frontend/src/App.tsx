@@ -8,6 +8,7 @@ import OrganizeElectionPage from './pages/OrganizeElectionPage';
 import AdminHomePage from './pages/AdminHomePage';
 import VoterHomePage from './pages/VoterHomePage';
 import VotingPage from './pages/VotingPage';
+import VotingDetailPage from './pages/VotingDetailPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin/home" element={<AdminHomePage />} />
         <Route path="/voter/home" element={<VoterHomePage />} />
         <Route path="/voter/voting" element={<VotingPage />} />
+        <Route path="/voter/vote/:id" element={<VotingDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
