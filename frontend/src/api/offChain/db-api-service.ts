@@ -14,11 +14,34 @@ const saveElection = async ({contractAddress, title, candidates, duration, statu
     }
 }
 
-const getElection = async () => {
-    return('Get election');
-}
+const getElectionById = async (id: string) => {
+    try {
+        const response: AxiosResponse = await axios.get(
+            `${process.env.REACT_APP_NODE_URL}/api/election/${id}`,
+            { withCredentials: true }
+        );
+
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error("Election retrieval failed");
+        }
+    } catch (error) {
+        console.error("Error fetching election by ID:", error);
+        throw error;
+    }
+};
 
 const getElectionAll = async() => {
-    return('Get All elections');
+    try{
+        const response : AxiosResponse =  await axios.get(process.env.REACT_APP_NODE_URL + "/api/election/all", { withCredentials: true });
+        if(response.status === 201 || response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error("Elections retreival failed");
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }
-export {saveElection, getElection, getElectionAll}
+export {saveElection, getElectionById, getElectionAll}
