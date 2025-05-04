@@ -7,16 +7,10 @@ import '../components/ElectionForm/election-form.css'
 import StandardButton from "../components/StandardButton/StandardButton";
 import { createElection, SolidityCandidates } from "../api/blockchain/ethers";
 import { saveElection } from "../api/offChain/db-api-service"
-type Candidate = {
-    id: string;
-    name: string;
-    party: string;
-    image: File | null;
-    imagePreview: string;
-  };
-type DurationUnit = 'Days' | 'Weeks' | 'Months';
+import { CandidateRequest, DurationUnit } from "../types";
+
 const OrganizeElectionPage = () => {
-    const [candidates, setCandidates] = useState<Candidate[]>([{
+    const [candidates, setCandidates] = useState<CandidateRequest[]>([{
         id: uuidv4(),
         name: "",
         party: "",

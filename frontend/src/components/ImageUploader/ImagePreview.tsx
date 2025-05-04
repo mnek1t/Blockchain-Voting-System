@@ -1,6 +1,6 @@
-type ImagePreviewProps = {
+interface ImagePreviewProps {
     file: File | null;
-  };
+};
   
   const ImagePreview = ({ file }: ImagePreviewProps) => {
     if (!file) {
