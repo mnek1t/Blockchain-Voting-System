@@ -3,7 +3,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Voting {
     struct Candidate {
-        uint id;
+        string id;
         string name;
         uint voteCount;
     }
@@ -26,7 +26,7 @@ contract Voting {
     mapping(address => bytes32) private votesHashes;
 
     event VoteCommitted(address voter);
-    event VoteRevealed(address voter, uint candidateId);
+    event VoteRevealed(address voter, string candidateId);
     event VoteEnded();
 
     modifier onlyDuringElectionTime() {
@@ -43,22 +43,36 @@ contract Voting {
         require(block.timestamp > endTime, "Voting is not finished yet");
          _;
     }
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
+
+    modifier onlyVoter() {
+        require(msg.sender != governmentAddressBudget, "Government Account cannot participate in voting!");
+        _;
+    }
     // initialize all candidates and duration of voting. MUST be available only for the owner of the contract - adming - government.
-    constructor(string[] memory _candidatesNames, uint _duration, address payable _governmentAddressBudget) {
-        require(_candidatesNames.length > 0, "Candidates required");
+    constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget) {
+        require(_candidates.length > 0, "Candidates required");
         owner = msg.sender;
+        require(owner != _governmentAddressBudget, "Cannot deploy from government account");
+        
         governmentAddressBudget = _governmentAddressBudget;
-        for(uint i = 0; i < _candidatesNames.length; i++) {
-            candidates.push(Candidate(i, _candidatesNames[i], 0));
+        for (uint i = 0; i < _candidates.length; i++) {
+            candidates.push(
+                Candidate({
+                    id: _candidates[i].id,
+                    name: _candidates[i].name,
+                    voteCount: _candidates[i].voteCount
+                })
+            );
         }
         startTime = block.timestamp;
         endTime =  startTime + _duration;
     }
-    function vote(bytes32 _voteHash) external payable onlyDuringElectionTime {
+    function vote(bytes32 _voteHash) external payable onlyDuringElectionTime onlyVoter{
         require(!hasVoted[msg.sender], "You have already voted");
         require(msg.value == depositAmount, "Deposit amount is not correct");
 
@@ -74,12 +88,20 @@ contract Voting {
         emit VoteEnded();
     }
 
-    function revealVote(uint _candidateId, string memory _salt) external onlyDuringRevealPhase {
+    function revealVote(string memory _candidateId, string memory _salt) external onlyDuringRevealPhase {
         require(hasVoted[msg.sender], "You have not voted yet");
         require(!hasRevealed[msg.sender], "Vote already revealed");
         require(keccak256(abi.encodePacked(_candidateId, _salt)) == votesHashes[msg.sender], "Vote hash is not correct");
 
-        candidates[_candidateId].voteCount++;
+        bool found = false;
+        for(uint i = 0; i < candidates.length; i++) {
+            if(keccak256(abi.encodePacked(candidates[i].id)) == keccak256(abi.encodePacked(_candidateId))) {
+                found = true;
+                candidates[i].voteCount++;
+                break;
+            }
+        }
+        require(found == true, 'Candidate does not exist with this id!');
         hasRevealed[msg.sender] = true;
         payable(msg.sender).transfer(depositAmount);
 
@@ -95,4 +117,5 @@ contract Voting {
     function getResults() external view onlyAfterElectionTime returns(Candidate[] memory) {
         return candidates;
     }
+
 }

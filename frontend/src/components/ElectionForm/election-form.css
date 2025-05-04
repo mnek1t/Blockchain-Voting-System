@@ -12,22 +12,34 @@
     margin-bottom: 1rem;
 }
 
+.election-custom-duration {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1em;
+}
+
 .election-form-input-group {
     display: flex;
     flex: 1;
     flex-direction: column;
 }
 
-.election-form-dates {
+.election-form-dates, .election-title {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
 }
 
-.election-form-dates input {
+.election-form-dates select, .election-title input {
     cursor: pointer;
     height: 2rem;
     box-sizing: border-box;
+}
+
+.election-custom-duration-input  {
+    width: 50%;
+    flex: none;
 }
 
 .election-form-input {
@@ -39,6 +51,7 @@
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     flex: 1;
 }
+
 
 .election-form-input label {
     cursor: pointer;

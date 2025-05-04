@@ -3,8 +3,9 @@ import StandardButton from '../StandardButton/StandardButton';
 import { basicLogin, logout } from '../../api/auth/blockhain-api-service';
 import { useState } from 'react';
 import { BasicLoginCredentials } from '../../api/auth/blockchain-api-definitions';
-
+import { useNavigate } from 'react-router-dom';
 const BasicLogin = () => {
+    const navigate = useNavigate();
     const [loginCreds, setLoginCreds] = useState<BasicLoginCredentials>({
         personalNumber: "",
         password: ""
@@ -16,6 +17,7 @@ const BasicLogin = () => {
         basicLogin(loginCreds)
         .then((data) => {
             console.log(data)
+            navigate(`/${data.role}/home`)
         })
         .catch((e) => console.error(e))
     }
