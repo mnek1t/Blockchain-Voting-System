@@ -15,7 +15,7 @@ export const getTimeLeft = (time: string | undefined) => {
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  return `${days}d ${hours}h ${minutes}m`;
+  return `${days}d ${hours}h ${minutes}m left`;
 };
 
 export function fileToBase64(file: File): Promise<string> {

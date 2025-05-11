@@ -13,7 +13,6 @@ const BasicLogin = () => {
 
     const handleConnectTo = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(loginCreds)
         basicLogin(loginCreds)
         .then((data) => {
             console.log(data)
