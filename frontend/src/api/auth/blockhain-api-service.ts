@@ -14,7 +14,6 @@ const basicLogin = async ({personalNumber, password}: BasicLoginCredentials) => 
     }
 }
 
-
 const logout = async () => {
     try {
         const response : AxiosResponse = await axios.post(process.env.REACT_APP_NODE_URL + "/api/auth/logout", {}, {withCredentials: true});
@@ -25,6 +24,18 @@ const logout = async () => {
         }
     } catch (error) {
         console.error(error);
+    }
+}
+const getMe = async () => {
+    try {
+        const response : AxiosResponse = await axios.get(process.env.REACT_APP_NODE_URL + "/api/auth/user/me", {withCredentials: true});
+        if(response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error('Get auth user data failed');
+        }
+    } catch(error) {
+        console.error(error)
     }
 }
 
@@ -41,4 +52,4 @@ const validateToken = async() => {
         console.error(error)
     }
 }
-export {basicLogin, logout, validateToken}
+export {basicLogin, logout, getMe, validateToken}
