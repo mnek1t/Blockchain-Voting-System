@@ -8,10 +8,12 @@ import { ElectionResponse } from "../types";
 import { getElectionById } from "../api/offChain/db-api-service";
 import VotingView from "../components/VotingView/VotingView";
 import { formatDate, getTimeLeft } from "../utils/utils";
+import { useUser } from "../AuthContext";
 const VotingDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const [election, setElection] = useState<ElectionResponse>();
     const [connectedAccount, setConnectedAccount] = useState<string>();
+    const { user } = useUser();
     useEffect(() => {
         if(!id) return;
 
@@ -49,15 +51,17 @@ const VotingDetailPage = () => {
     } 
     return(
         <div className="app-container">
-        <Header/>
-        <hr/>
-        <a href="/voter/voting">&lt; To voting list</a>
-        <h6>This is Voter view. Please read instructions before voting</h6>
-        <h3>Metamask account connected: {connectedAccount}</h3>
-        <StandardButton label="Connect Metamask" className="button-blue" onClick={handleConnectWallet}/>
-        <h5>Voting will be finished on {formatDate(election?.end_time)}. {timeLeft} left</h5>
-        {election && <VotingView candidates={election.Candidates} contractAddress={election.contract_address}/>}
-        <Contact/>
+            
+            <Header/>
+            <hr/>
+            
+            <a href="/votings">&lt; To voting list</a>
+            <h6>This is {user && user?.role.charAt(0).toUpperCase() + user?.role.slice(1)} view. Please read instructions before voting</h6>
+            <h3>Metamask account connected: {connectedAccount}</h3>
+            <StandardButton label="Connect Metamask" className="button-blue" onClick={handleConnectWallet}/>
+            <h5>Voting will be finished on {formatDate(election?.end_time)}. {timeLeft}</h5>
+            {election && <VotingView candidates={election.Candidates} contractAddress={election.contract_address} status={election.status} role={user?.role}/>}
+            <Contact/>
         </div>
     )
 }
