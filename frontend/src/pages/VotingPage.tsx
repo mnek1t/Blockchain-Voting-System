@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { getElectionAll } from '../api/offChain/db-api-service';
 import ElectionsView from "../components/ElectionsView/ElectionsView";
 import { ElectionResponse } from "../types";
+import { useUser } from "../AuthContext";
 const VotingPage = () => {
+    const {user} = useUser();
     const [elections, setElections] = useState<ElectionResponse[]>([]);
     useEffect(() => {
         getElectionAll()
@@ -19,7 +21,7 @@ const VotingPage = () => {
     <div className="app-container">
         <Header/>
         <hr/>
-        <a href="/voter/home">&lt; To home page</a>
+        <a href={`/${user && user.role}/home`}>&lt; To home page</a>
         <ElectionsView elections={elections}/>
         <Contact/>
     </div>
