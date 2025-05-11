@@ -1,3 +1,8 @@
+export type AuthUserDataResponse = {
+    role: string;
+    name: string;
+    voter_id: string;
+};
 export type CandidateResponse = {
     candidate_id: string;
     name: string;
