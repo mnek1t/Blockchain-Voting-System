@@ -60,7 +60,7 @@ const VotingDetailPage = () => {
             <h3>Metamask account connected: {connectedAccount}</h3>
             <StandardButton label="Connect Metamask" className="button-blue" onClick={handleConnectWallet}/>
             <h5>Voting will be finished on {formatDate(election?.end_time)}. {timeLeft}</h5>
-            {election && <VotingView candidates={election.Candidates} contractAddress={election.contract_address} status={election.status} role={user?.role}/>}
+            {election && <VotingView electionId={election.election_id} candidates={election.Candidates} contractAddress={election.contract_address} status={election.status} role={user?.role}/>}
             <Contact/>
         </div>
     )
