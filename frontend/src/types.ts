@@ -34,3 +34,9 @@ export type CandidateRequest = {
     image: File | null,
     imagePreview: string
 }
+
+export type ElectionCandidatesResults = {
+    id: string,
+    name: string,
+    voteCount: number
+}
