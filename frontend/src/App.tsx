@@ -12,6 +12,7 @@ import VotingPage from './pages/VotingPage';
 import VotingDetailPage from './pages/VotingDetailPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
+import VotingResultPage from './pages/VotingResultPage';
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,8 @@ function App() {
         <Route path="/voter/home" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VoterHomePage /></PrivateRoute>} />
         <Route path="/votings" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingPage /></PrivateRoute>} />
         <Route path="/voter/vote/:id" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingDetailPage /></PrivateRoute>} />
+        <Route path="/voter/vote/:id/results" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingResultPage /></PrivateRoute>} />
+
       </Routes>
     </BrowserRouter>
   );
