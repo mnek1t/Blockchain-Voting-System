@@ -121,7 +121,7 @@ const OrganizeElectionPage = () => {
             name: candidate.name,
             voteCount: 0
         }));
-        createElection(contractCandidatesInput, 300, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS)
+        createElection(contractCandidatesInput, 100, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS)
         .then((contractAddress) => {
             console.log(contractAddress)
 
