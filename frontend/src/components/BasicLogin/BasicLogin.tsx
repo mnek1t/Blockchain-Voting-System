@@ -4,8 +4,13 @@ import { basicLogin, logout } from '../../api/auth/blockhain-api-service';
 import { useState } from 'react';
 import { BasicLoginCredentials } from '../../api/auth/blockchain-api-definitions';
 import { useNavigate } from 'react-router-dom';
+import ReferenceButton from '../ReferenceButton/ReferenceButton';
+import { Alert } from '@mui/material';
+import AlertTitle from '@mui/material/AlertTitle';
 const BasicLogin = () => {
     const navigate = useNavigate();
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'info' | 'warning'>('error');
     const [loginCreds, setLoginCreds] = useState<BasicLoginCredentials>({
         personalNumber: "",
         password: ""
@@ -18,7 +23,11 @@ const BasicLogin = () => {
             console.log(data)
             navigate(`/${data.role}/home`)
         })
-        .catch((e) => console.error(e))
+        .catch((error : any) => {
+            console.error(error)
+            setAlertMessage(error.message)
+            setAlertSeverity('error')
+        })
     }
 
     const handleForgetPassword = () => {
@@ -34,7 +43,12 @@ const BasicLogin = () => {
 
     return(
         <div className='login-main-container'>
-            <a href="/">&lt; To home page</a>
+            {/* <ReferenceButton label='To Login Options page'/> */}
+            <a href="/">&lt; To Login Options page</a>
+            {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
+                <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
+                {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+            </Alert>}
             <h3>Connect To</h3>
             <form className="basic-login-form" onSubmit={(e) => handleConnectTo(e)}>
                 <div className='form-input'>
