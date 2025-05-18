@@ -9,8 +9,8 @@ const VoterHomePage = () => {
         <h6>This is Voter view. Please read instructions before voting</h6>
         <div className='login-main-container'>
             <div className="login-options">
-                <OptionCard href="/voter/voting" className='option-smart-id option' label="Participate in Voting"/>
-                <OptionCard href="#" className='option-smart-id option' label="Review previous votings"/>
+                <OptionCard href="/votings" className='option-smart-id option' label="Participate in Voting"/>
+                <OptionCard href="/votings" className='option-smart-id option' label="Review previous votings"/>
             </div>
         </div>
         <Contact/>
