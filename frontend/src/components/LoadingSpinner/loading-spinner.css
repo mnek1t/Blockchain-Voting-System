@@ -1,0 +1,10 @@
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: '60vh';
+    flex-direction: column;
+}
+.loading-spinner__inner-text {
+    margin-top: 1rem 
+}
