@@ -1,0 +1,14 @@
+.reference-button {
+    font-family:"sans-serif"; 
+    font-size: 15px;
+    background: none; 
+    border: none,;
+    color: #012169; 
+    text-decoration: underline; 
+    cursor: pointer; 
+    padding: 0;
+}
+
+.reference-button:hover {
+    color: #2f4984
+}

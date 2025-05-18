@@ -15,7 +15,7 @@ export const getTimeLeft = (time: string | undefined) => {
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  return `${days}d ${hours}h ${minutes}m`;
+  return `${days}d ${hours}h ${minutes}m left`;
 };
 
 export function fileToBase64(file: File): Promise<string> {
@@ -32,4 +32,16 @@ export function fileToBase64(file: File): Promise<string> {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+};
+
+export const downloadSaltFile = (salt: string, filename = "BVS_SECRET_SALT_DO_NOT_SHARE.txt") => {
+  const blob = new Blob([salt], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };

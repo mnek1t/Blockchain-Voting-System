@@ -11,7 +11,7 @@ const AdminHomePage = () => {
                 <a href='/election/prep' className='option-smart-id option'>
                     Announce new Election
                 </a>
-                <a href='#' className='option-eParaksts option'>
+                <a href='/votings' className='option-eParaksts option'>
                     Review elections
                 </a>
                 <a href='#' className='option-basic-authorization option'>

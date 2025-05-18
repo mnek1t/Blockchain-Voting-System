@@ -1,3 +1,8 @@
+export type AuthUserDataResponse = {
+    role: string;
+    name: string;
+    voter_id: string;
+};
 export type CandidateResponse = {
     candidate_id: string;
     name: string;
@@ -28,4 +33,10 @@ export type CandidateRequest = {
     party: string,
     image: File | null,
     imagePreview: string
+}
+
+export type ElectionCandidatesResults = {
+    id: string,
+    name: string,
+    voteCount: number
 }

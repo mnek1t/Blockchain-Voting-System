@@ -8,7 +8,9 @@ import StandardButton from "../components/StandardButton/StandardButton";
 import { createElection, SolidityCandidates } from "../api/blockchain/ethers";
 import { saveElection } from "../api/offChain/db-api-service"
 import { CandidateRequest, DurationUnit } from "../types";
-
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
 const OrganizeElectionPage = () => {
     const [candidates, setCandidates] = useState<CandidateRequest[]>([{
         id: uuidv4(),
@@ -18,12 +20,14 @@ const OrganizeElectionPage = () => {
         imagePreview: ""
       }]);
     const unitToSeconds :Record<DurationUnit, number> = {
-        'Days': 86400,
-        'Weeks': 604800,
-        'Months': 2628000
+        'Days': 300,//86400,
+        'Weeks': 600,//604800,
+        'Months': 1200//2628000
     };
     const [title, setTitle] = useState<string>("");
     const [duration, setDuration] = useState(86400);
+    const [revealDuration, setRevealDuration] = useState(86400);
+
     const [durationMeasurement, setDurationMeasurement] = useState<DurationUnit>('Days');
 
     const [customDuration, setCustomDuration] = useState(0);
@@ -31,6 +35,8 @@ const OrganizeElectionPage = () => {
     const [candidateName, setCandidateName] = useState<string>();
     const [candidateParty, setCandidateParty] = useState<string>();
 
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'info' | 'warning'>('error');
     useEffect(() => {
         const draft = localStorage.getItem("electionDraft");
         if (draft) {
@@ -87,19 +93,22 @@ const OrganizeElectionPage = () => {
 
     function handleAnnounceElection() {
         if(!title || title === '') {
-            alert("Provide a title for election.");
+            setAlertMessage("Provide a title for election.")
+            setAlertSeverity('warning');
             return;
         }
-        if (duration < 86400 && customDuration < 0) {
-            alert("Minimum duration of voring is 1 day!");
-            return;
-        }
+        // if (duration < 86400 && customDuration < 0) {
+        //     alert("Minimum duration of voring is 1 day!");
+        //     return;
+        // }
         if(candidates.length < 2) {
-            alert("Please add at least 2 candidates.");
+            setAlertMessage("Please add at least 2 candidates.")
+            setAlertSeverity('warning');
             return;
         }
         if (candidates.some(c => !c.name || !c.party)) {
-            alert("Please fill out all candidate fields.");
+            setAlertMessage('Please fill out all candidate fields.')
+            setAlertSeverity('warning');
             return;
         }
         const candidatesPayload = candidates.map(candidate => ({
@@ -115,7 +124,7 @@ const OrganizeElectionPage = () => {
             name: candidate.name,
             voteCount: 0
         }));
-        createElection(contractCandidatesInput, finalDuration, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS)
+        createElection(contractCandidatesInput, 100, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS, 100)
         .then((contractAddress) => {
             console.log(contractAddress)
 
@@ -128,14 +137,17 @@ const OrganizeElectionPage = () => {
             })
             .then((data) => {
                 console.log(data);
-                alert('Election is announced and saved!')
+                setAlertMessage('Election is announced and saved!')
+                setAlertSeverity('success');
             })
-            .catch((err) => {
-                console.error(err)
+            .catch((error : any) => {
+                setAlertMessage('Error during election save')
+                setAlertSeverity('error');
             })
         })
-        .catch((err) => {
-            console.error(err)
+        .catch((error : any) => {
+            setAlertMessage(error?.reason)
+            setAlertSeverity('error');
         })
     }
 
@@ -144,7 +156,12 @@ const OrganizeElectionPage = () => {
         <Header/>
         <hr/>
         <h6>This is Admin view with strict access. Please read instructions before starting the election. </h6>
-        <a href="/admin/home">&lt; To home page</a>
+        <ReferenceButton label='To home page' destination="/admin/home"/>
+        <br/><br/>
+        {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
+            <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
+            {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+        </Alert>}
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
         <div className="election-title">
             <div className="election-form-input">   
@@ -185,9 +202,19 @@ const OrganizeElectionPage = () => {
                             <option value={'Months'}>{'Month' + (customDuration === 1 ? '' : 's')}</option>
                         </select>
                     </div>
-                </div>
-                
+                </div> 
             }
+            <div className="election-form-input">
+                <label htmlFor="reveal-duration-select">Reveal Stage Duration</label>
+                <select
+                    id="reveal-duration-select"
+                    value={revealDuration}
+                    onChange={(e) => setRevealDuration(parseInt(e.target.value))}
+                >
+                    <option value={86400}>1 Day</option>
+                    <option value={604800}>1 Week</option>
+                </select>
+            </div>
         </div>
             {candidates.map((candidate) => (
                     <div className="election-form-candidate" key={candidate.id}>

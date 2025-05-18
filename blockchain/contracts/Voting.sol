@@ -14,6 +14,7 @@ contract Voting {
     uint private startTime;
     uint private endTime;
     uint private revealEndTime;
+    uint private revealDuration;
 
     bool private isVotingFinished;
 
@@ -30,22 +31,29 @@ contract Voting {
     event VoteEnded();
 
     modifier onlyDuringElectionTime() {
-        require(block.timestamp >= startTime && block.timestamp <= endTime, "Voting is not allowed now");
+        require(block.timestamp >= startTime && block.timestamp <= endTime, "Voting is not allowed anymore! Time is up!");
         _;
     }
 
     modifier onlyDuringRevealPhase() {
-        require(isVotingFinished, "Reveal stage is not started yet");
+        require(isVotingFinished, "Reveal stage has not started yet!");
+        require(block.timestamp <= revealEndTime, "Reveal phase is over!");
         _;
     }
     
     modifier onlyAfterElectionTime() {
-        require(block.timestamp > endTime, "Voting is not finished yet");
+        require(block.timestamp > endTime, "Voting has not finished yet!");
+         _;
+    }
+
+    modifier onlyAfterRevealPhase() {
+        require(block.timestamp > revealEndTime, "Revealing has not finished yet!");
+        require(block.timestamp > endTime, "Voting has not finished yet!");
          _;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
+        require(msg.sender == owner, "Only owner can call this function!");
         _;
     }
 
@@ -53,11 +61,12 @@ contract Voting {
         require(msg.sender != governmentAddressBudget, "Government Account cannot participate in voting!");
         _;
     }
+
     // initialize all candidates and duration of voting. MUST be available only for the owner of the contract - adming - government.
-    constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget) {
-        require(_candidates.length > 0, "Candidates required");
+    constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget, uint _revealDuration) {
+        require(_candidates.length > 0, "Candidates are required!");
         owner = msg.sender;
-        require(owner != _governmentAddressBudget, "Cannot deploy from government account");
+        require(owner != _governmentAddressBudget, "Cannot deploy from government account!");
         
         governmentAddressBudget = _governmentAddressBudget;
         for (uint i = 0; i < _candidates.length; i++) {
@@ -71,10 +80,12 @@ contract Voting {
         }
         startTime = block.timestamp;
         endTime =  startTime + _duration;
+        revealDuration = _revealDuration;
     }
+
     function vote(bytes32 _voteHash) external payable onlyDuringElectionTime onlyVoter{
-        require(!hasVoted[msg.sender], "You have already voted");
-        require(msg.value == depositAmount, "Deposit amount is not correct");
+        require(!hasVoted[msg.sender], "You have already voted!");
+        require(msg.value == depositAmount, "Deposit amount is not correct!");
 
         votesHashes[msg.sender] = _voteHash;
         hasVoted[msg.sender] = true;
@@ -82,16 +93,19 @@ contract Voting {
     }
 
     function endElection() external onlyAfterElectionTime {
-        require(!isVotingFinished, "Voting is already finished");
+        require(!isVotingFinished, "Voting is already finished!");
         isVotingFinished = true;
-        revealEndTime = block.timestamp + 1 days;
+        revealEndTime = block.timestamp + revealDuration;
         emit VoteEnded();
     }
 
     function revealVote(string memory _candidateId, string memory _salt) external onlyDuringRevealPhase {
-        require(hasVoted[msg.sender], "You have not voted yet");
-        require(!hasRevealed[msg.sender], "Vote already revealed");
-        require(keccak256(abi.encodePacked(_candidateId, _salt)) == votesHashes[msg.sender], "Vote hash is not correct");
+        require(hasVoted[msg.sender], "You have not voted earlier, you cannot reveal any vote!");
+        require(!hasRevealed[msg.sender], "Vote already revealed!");
+        require(
+            keccak256(abi.encodePacked(_candidateId, _salt)) == votesHashes[msg.sender],
+            "Vote hash is not correct"
+        );
 
         bool found = false;
         for(uint i = 0; i < candidates.length; i++) {
@@ -108,14 +122,42 @@ contract Voting {
         emit VoteRevealed(msg.sender, _candidateId);
     }
 
-    function withdrawToGovernmentBudget() external onlyOwner onlyAfterElectionTime {
-        require(isVotingFinished, "Voting is not finished yet");
-        require(block.timestamp > revealEndTime, "Reveal phase is not finished yet");
+    function withdrawToGovernmentBudget() external onlyOwner onlyAfterRevealPhase {
+        require(isVotingFinished, "Voting is not finished yet!");
+        require(block.timestamp > revealEndTime, "Reveal phase is not finished yet!");
         governmentAddressBudget.transfer(address(this).balance);
     }
 
-    function getResults() external view onlyAfterElectionTime returns(Candidate[] memory) {
+    function getResults() external view onlyAfterRevealPhase returns(Candidate[] memory) {
         return candidates;
     }
 
+    // TODO: Delete
+    function getVotingTimestamps() external view returns (uint _startTime, uint _endTime, uint _revealEndTime) {
+        return (startTime, endTime, revealEndTime);
+    }
+
+    function getIsVotingFinished() external view returns (bool) {
+        return isVotingFinished;
+    }
+
+    function getDepositAmount() external view returns (uint) {
+        return depositAmount;
+    }
+
+    function getOwner() external view returns (address) {
+        return owner;
+    }
+
+    function getGovernmentAddress() external view returns (address) {
+        return governmentAddressBudget;
+    }
+    
+    function hasAddressVoted(address _addr) external view returns (bool) {
+        return hasVoted[_addr];
+    }
+
+    function hasAddressRevealed(address _addr) external view returns (bool) {
+        return hasRevealed[_addr];
+    }
 }

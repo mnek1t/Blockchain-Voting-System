@@ -18,7 +18,8 @@ export interface SolidityCandidates {
 const createElection = async(
     candidates: SolidityCandidates[], 
     durationInSeconds: number, 
-    governmentBudgetAddress: string = '0xE9DD3570aEd496fde77EE174D7DF636e334F17FE'
+    governmentBudgetAddress: string = '0xE9DD3570aEd496fde77EE174D7DF636e334F17FE',
+    revealDuration: number
 ) : Promise<string> => {
     if(!window.ethereum) throw new Error("Metamask not found");
 
@@ -30,7 +31,7 @@ const createElection = async(
         VotingBytecode.bytecode,
         signer
     )
-    const contract = await factory.deploy(candidates, durationInSeconds, governmentBudgetAddress);
+    const contract = await factory.deploy(candidates, durationInSeconds, governmentBudgetAddress, revealDuration);
     await contract.waitForDeployment();
 
     const deployedAddress = await contract.getAddress();

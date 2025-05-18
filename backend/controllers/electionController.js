@@ -76,7 +76,7 @@ const getAllElections = async (req, res) => {
     console.log(decoded)
     try {
         const elections = await Election.findAll({
-            where: { status: 'active' },
+            // where: { status: 'active' },
             include: Candidate,
         });
 
@@ -89,4 +89,37 @@ const getAllElections = async (req, res) => {
     }
 }
 
-module.exports = {saveElection, getElectionById, getAllElections};
+// @desc: Update election to off chain DB
+// @access: private
+// @route: POST /api/election/update 
+const updateElection = async (req, res) => {
+    try {
+        validateToken(req);
+        const {contractAddress, title, candidates, duration, status} = req.body;
+        if (!contractAddress || !status) {
+            return res.status(400).json({ error: 'Missing required fields:' });
+        }
+
+        const [rowsUpdated, [updatedElection]]  = await Election.update({
+                status: status
+            }, {
+                where: { contract_address: contractAddress}, 
+                returning: true 
+            }
+        );
+
+        if (rowsUpdated === 0) {
+            return res.status(404).json({ error: 'Election not found' });
+        }
+
+        return res.status(200).json({
+            message: 'Election updated',
+            election: updatedElection
+        });
+    } catch(err) {
+        console.error('Error saving election:', err);
+        return res.status(500).json({ error: err.message });
+    }
+}
+
+module.exports = {saveElection, getElectionById, getAllElections, updateElection};

@@ -1,7 +1,9 @@
 import './header.css';
 import logo from '../../assets/logo.png';
 import StandardButton from '../StandardButton/StandardButton';
+import { useTranslation } from 'react-i18next';
 const Header = () => {
+    const { i18n } = useTranslation();
     return(
         <nav className="login-header">
             <div className="login-header-col-50">
@@ -17,8 +19,8 @@ const Header = () => {
             <div className="login-header-col-50">
                 <div className='right-padding'>
                     <div className="login-header-button-container">
-                        <StandardButton label='EN' title="English"/>
-                        <StandardButton label='LV' title="Latvian"/>
+                        <StandardButton label='EN' title="English" onClick={() => i18n.changeLanguage('en')}/>
+                        <StandardButton label='LV' title="Latvian" onClick={() => i18n.changeLanguage('lv')}/>
                     </div>
                 </div>
             </div>

@@ -14,6 +14,19 @@ const saveElection = async ({contractAddress, title, candidates, duration, statu
     }
 }
 
+const updateElection = async (contractAddress: string, status: string) => {
+    try{
+        const response : AxiosResponse =  await axios.patch(process.env.REACT_APP_NODE_URL + "/api/election/update", {contractAddress, status},  { withCredentials: true });
+        if(response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error("Contract update failed");
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const getElectionById = async (id: string) => {
     try {
         const response: AxiosResponse = await axios.get(
@@ -44,4 +57,4 @@ const getElectionAll = async() => {
         console.error(error);
     }
 }
-export {saveElection, getElectionById, getElectionAll}
+export {saveElection, getElectionById, getElectionAll, updateElection}

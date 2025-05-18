@@ -49,6 +49,23 @@ const logout = async (req, res) => {
         res.status(401).json({ error: 'Unauthorized' });
     }
 }
+
+// @desc: Get auth user data 
+// @access: public
+// @route: GET /api/auth/user/me 
+const getMe = (req, res) => {
+    try {
+        const decoded = validateToken(req);
+        res.status(200).json({ 
+            voterId: decoded.voterId, 
+            role: decoded.role,
+            name: decoded.name 
+        });
+    } catch (err) {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+}
+
 // @desc: Validate JWT Token for user authentication
 // @access: private
 // @route: POST /api/auth/validateToken 
@@ -62,4 +79,4 @@ const validateToken = (req) => {
     return decoded
 }
 
-module.exports = {login, logout, validateToken};
+module.exports = {login, logout, getMe, validateToken};

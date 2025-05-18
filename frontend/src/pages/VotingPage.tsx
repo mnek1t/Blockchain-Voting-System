@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { getElectionAll } from '../api/offChain/db-api-service';
 import ElectionsView from "../components/ElectionsView/ElectionsView";
 import { ElectionResponse } from "../types";
+import { useUser } from "../AuthContext";
+import ReferenceButton from '../components/ReferenceButton/ReferenceButton';
 const VotingPage = () => {
+    const {user} = useUser();
     const [elections, setElections] = useState<ElectionResponse[]>([]);
     useEffect(() => {
         getElectionAll()
@@ -19,7 +22,7 @@ const VotingPage = () => {
     <div className="app-container">
         <Header/>
         <hr/>
-        <a href="/voter/home">&lt; To home page</a>
+        <ReferenceButton label='To home page' destination={`/${user && user.role}/home`}/>
         <ElectionsView elections={elections}/>
         <Contact/>
     </div>
