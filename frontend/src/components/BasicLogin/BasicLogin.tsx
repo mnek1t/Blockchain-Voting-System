@@ -26,11 +26,8 @@ const BasicLogin = () => {
         .catch((error : any) => {
             console.error(error)
             setAlertMessage(error.message)
-            setAlertSeverity('error')
         })
     }
-
-    const handleForgetPassword = () => {
 
     }
 

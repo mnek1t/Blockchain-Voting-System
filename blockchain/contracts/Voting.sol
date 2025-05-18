@@ -61,6 +61,7 @@ contract Voting {
         require(msg.sender != governmentAddressBudget, "Government Account cannot participate in voting!");
         _;
     }
+
     // initialize all candidates and duration of voting. MUST be available only for the owner of the contract - adming - government.
     constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget, uint _revealDuration) {
         require(_candidates.length > 0, "Candidates are required!");
