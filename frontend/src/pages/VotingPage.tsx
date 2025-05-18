@@ -6,16 +6,22 @@ import ElectionsView from "../components/ElectionsView/ElectionsView";
 import { ElectionResponse } from "../types";
 import { useUser } from "../AuthContext";
 import ReferenceButton from '../components/ReferenceButton/ReferenceButton';
+import { Alert, AlertTitle } from "@mui/material";
 const VotingPage = () => {
     const {user} = useUser();
     const [elections, setElections] = useState<ElectionResponse[]>([]);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+    const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'info' | 'warning'>('error');
     useEffect(() => {
         getElectionAll()
         .then((data) => { 
             console.log(data);
             setElections(data)
         })
-        .catch((err) => console.error(err))
+        .catch((err) => {
+            setAlertMessage(err.message);
+            setAlertSeverity('error')
+        })
     }, [])
 
     return(
@@ -23,7 +29,13 @@ const VotingPage = () => {
         <Header/>
         <hr/>
         <ReferenceButton label='To home page' destination={`/${user && user.role}/home`}/>
-        <ElectionsView elections={elections}/>
+        {alertMessage ? 
+            (<Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
+                <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
+                {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+            </Alert>) : 
+            (<ElectionsView elections={elections}/>)
+        }
         <Contact/>
     </div>
     );
