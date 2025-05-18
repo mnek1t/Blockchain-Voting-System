@@ -33,6 +33,11 @@
           "internalType": "address payable",
           "name": "_governmentAddressBudget",
           "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_revealDuration",
+          "type": "uint256"
         }
       ],
       "stateMutability": "nonpayable",

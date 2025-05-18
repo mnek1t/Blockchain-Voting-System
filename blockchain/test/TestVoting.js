@@ -12,13 +12,16 @@ contract("Voting", accounts => {
     let governmentAcc = accounts[1]
     let voter1 = accounts[2]
     const duration = 1000;
+    const revealDuration = 1000;
+
     beforeEach(async () => {
-        votingContractInstance = await Voting.new(candidates, duration, governmentAcc, {from: owner});
+        votingContractInstance = await Voting.new(candidates, duration, governmentAcc, revealDuration, {from: owner});
     });
 
     it("should deploy with candidates", async () => {
         await time.increase(duration + 1);
         await votingContractInstance.endElection();
+        await time.increase(revealDuration + 1);
         const results = await votingContractInstance.getResults.call({ from: owner });
         assert.equal(results.length, 2);
         assert.equal(results[0].name, "Alice");
@@ -126,7 +129,7 @@ contract("Voting", accounts => {
             await votingContractInstance.revealVote(candidateId, salt, {from: voter1});
             assert.fail('Reveal vote without voting is impossible');
         } catch (err) {
-            assert(err.message.includes('You have not voted yet'));
+            assert(err.message.includes('You have not voted earlier, you cannot reveal any vote!'));
         }
     })
 
@@ -141,7 +144,7 @@ contract("Voting", accounts => {
             await votingContractInstance.revealVote(candidateId, salt, {from: voter1});
             assert.fail('Reveal should not be allowed during voting');
         } catch (err) {
-            assert(err.message.includes('Reveal stage is not started yet'));
+            assert(err.message.includes('Reveal stage has not started yet!'));
         }
     });
 
@@ -199,7 +202,7 @@ contract("Voting", accounts => {
         await votingContractInstance.endElection();
         // await votingContractInstance.revealVote(candidateId, salt, {from: voter1});
 
-        await time.increase(86400 + 1);
+        await time.increase(revealDuration + 1);
 
         const initialBalance = web3.utils.toBN(await web3.eth.getBalance(governmentAcc));
         await votingContractInstance.withdrawToGovernmentBudget({from: owner});
@@ -214,7 +217,7 @@ contract("Voting", accounts => {
             await votingContractInstance.withdrawToGovernmentBudget({from: voter1});
             assert.fail('Only owner should be allowed to withdraw');
         } catch (err) {
-            assert(err.message.includes('Only owner can call this function'));
+            assert(err.message.includes('Only owner can call this function!'));
         }
     });
 
@@ -225,7 +228,7 @@ contract("Voting", accounts => {
             await votingContractInstance.withdrawToGovernmentBudget({from: owner});
             assert.fail('Reveal phase is in progress');
         } catch (err) {
-            assert(err.message.includes('Reveal phase is not finished yet'));
+            assert(err.message.includes('Revealing has not finished yet!'));
         }
     });
 });

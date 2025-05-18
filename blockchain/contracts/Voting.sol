@@ -14,6 +14,7 @@ contract Voting {
     uint private startTime;
     uint private endTime;
     uint private revealEndTime;
+    uint private revealDuration;
 
     bool private isVotingFinished;
 
@@ -61,7 +62,7 @@ contract Voting {
         _;
     }
     // initialize all candidates and duration of voting. MUST be available only for the owner of the contract - adming - government.
-    constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget) {
+    constructor(Candidate[] memory _candidates, uint _duration, address payable _governmentAddressBudget, uint _revealDuration) {
         require(_candidates.length > 0, "Candidates are required!");
         owner = msg.sender;
         require(owner != _governmentAddressBudget, "Cannot deploy from government account!");
@@ -78,7 +79,9 @@ contract Voting {
         }
         startTime = block.timestamp;
         endTime =  startTime + _duration;
+        revealDuration = _revealDuration;
     }
+
     function vote(bytes32 _voteHash) external payable onlyDuringElectionTime onlyVoter{
         require(!hasVoted[msg.sender], "You have already voted!");
         require(msg.value == depositAmount, "Deposit amount is not correct!");
@@ -91,12 +94,12 @@ contract Voting {
     function endElection() external onlyAfterElectionTime {
         require(!isVotingFinished, "Voting is already finished!");
         isVotingFinished = true;
-        revealEndTime = block.timestamp + 1 days;
+        revealEndTime = block.timestamp + revealDuration;
         emit VoteEnded();
     }
 
     function revealVote(string memory _candidateId, string memory _salt) external onlyDuringRevealPhase {
-        require(hasVoted[msg.sender], "You have not voted yet!");
+        require(hasVoted[msg.sender], "You have not voted earlier, you cannot reveal any vote!");
         require(!hasRevealed[msg.sender], "Vote already revealed!");
         require(
             keccak256(abi.encodePacked(_candidateId, _salt)) == votesHashes[msg.sender],
