@@ -1,6 +1,6 @@
 import './basicLogin.css'
 import StandardButton from '../StandardButton/StandardButton';
-import { basicLogin, logout } from '../../api/auth/blockhain-api-service';
+import { basicLogin } from '../../api/auth/blockhain-api-service';
 import { useState } from 'react';
 import { BasicLoginCredentials } from '../../api/auth/blockchain-api-definitions';
 import { useNavigate } from 'react-router-dom';
@@ -29,8 +29,6 @@ const BasicLogin = () => {
         })
     }
 
-    }
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
         setLoginCreds((prevState) => {
@@ -38,10 +36,12 @@ const BasicLogin = () => {
         })
     }
 
+    const handleForgetPassword = () => {
+    }
+
     return(
         <div className='login-main-container'>
-            {/* <ReferenceButton label='To Login Options page'/> */}
-            <a href="/">&lt; To Login Options page</a>
+            <ReferenceButton label='To Login Options page' />
             {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
                 <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
                 {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
