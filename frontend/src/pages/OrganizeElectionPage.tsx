@@ -10,6 +10,7 @@ import { saveElection } from "../api/offChain/db-api-service"
 import { CandidateRequest, DurationUnit } from "../types";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
+import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
 const OrganizeElectionPage = () => {
     const [candidates, setCandidates] = useState<CandidateRequest[]>([{
         id: uuidv4(),
@@ -25,6 +26,8 @@ const OrganizeElectionPage = () => {
     };
     const [title, setTitle] = useState<string>("");
     const [duration, setDuration] = useState(86400);
+    const [revealDuration, setRevealDuration] = useState(86400);
+
     const [durationMeasurement, setDurationMeasurement] = useState<DurationUnit>('Days');
 
     const [customDuration, setCustomDuration] = useState(0);
@@ -121,7 +124,7 @@ const OrganizeElectionPage = () => {
             name: candidate.name,
             voteCount: 0
         }));
-        createElection(contractCandidatesInput, 100, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS)
+        createElection(contractCandidatesInput, 100, process.env.REACT_APP_GOVERNMENT_BUDGET_ADDRESS, 100)
         .then((contractAddress) => {
             console.log(contractAddress)
 
@@ -153,7 +156,7 @@ const OrganizeElectionPage = () => {
         <Header/>
         <hr/>
         <h6>This is Admin view with strict access. Please read instructions before starting the election. </h6>
-        <a href="/admin/home">&lt; To home page</a>
+        <ReferenceButton label='To home page' destination="/admin/home"/>
         <br/><br/>
         {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
             <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
@@ -199,9 +202,19 @@ const OrganizeElectionPage = () => {
                             <option value={'Months'}>{'Month' + (customDuration === 1 ? '' : 's')}</option>
                         </select>
                     </div>
-                </div>
-                
+                </div> 
             }
+            <div className="election-form-input">
+                <label htmlFor="reveal-duration-select">Reveal Stage Duration</label>
+                <select
+                    id="reveal-duration-select"
+                    value={revealDuration}
+                    onChange={(e) => setRevealDuration(parseInt(e.target.value))}
+                >
+                    <option value={86400}>1 Day</option>
+                    <option value={604800}>1 Week</option>
+                </select>
+            </div>
         </div>
             {candidates.map((candidate) => (
                     <div className="election-form-candidate" key={candidate.id}>
