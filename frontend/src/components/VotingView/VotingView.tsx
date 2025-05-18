@@ -3,28 +3,34 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CandidateResponse, ElectionCandidatesResults } from '../../types';
 import StandardButton from '../StandardButton/StandardButton';
-import { vote, revealVote, endElection, getResults, getVotingTimestamps,getDepositAmount, getGovernmentAddress, hasAddressVoted, withdrawToGovernmentBudget, hasAddressRevealed} from '../../api/blockchain/votingService';
+import { vote, revealVote, endElection, getResults, withdrawToGovernmentBudget} from '../../api/blockchain/votingService';
 import { updateElection } from '../../api/offChain/db-api-service';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import VotingBarChart from '../VoteBarChart/VoteBarChart';
+import { downloadSaltFile } from '../../utils/utils';
 interface VotingViewProps {
     electionId: string,
     candidates: CandidateResponse[],
     contractAddress: string,
     status: string,
     role: string | undefined
+    onStatusChange: (newValue: string) => void;
 }
-const VotingView = ({ electionId, candidates, contractAddress, status, role}: VotingViewProps) => {
+const VotingView = ({ electionId, candidates, contractAddress, status, role, onStatusChange}: VotingViewProps) => {
     const navigate = useNavigate();
+    const [statusState, setStatusState] = useState(status);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'info' | 'warning'>('error');
     const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
     const [isPoliciesAccepted, setIsPoliciesAccepted] = useState<boolean>(false);
     const [showModal, setShowModal] = useState(false);
-    const [modalMode, setModalMode] = useState<'vote' | 'reveal' | null>(null);
+    const [modalMode, setModalMode] = useState<'vote' | 'reveal' | 'downloadFile' | null>(null);
     const [salt, setSalt] = useState<string>();
     const [votingResults, setVotingResults] = useState<ElectionCandidatesResults[]>([])
+    useEffect(() => {
+        setStatusState(status)
+    }, [status])
     const handleCastVote = () => {
         if(!selectedCandidate) {
             setAlertMessage('Please select your candidate!')
@@ -44,6 +50,8 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
                 await vote(contractAddress, selectedCandidate!, salt!)   
                 setAlertMessage("Vote is submitted!"); 
                 setAlertSeverity('success');
+                setModalMode('downloadFile');
+                return;
             }
             if(modalMode === 'reveal') {
                 await revealVote(contractAddress, selectedCandidate!, salt!)
@@ -51,6 +59,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
                 setAlertMessage("Vote is revealed!"); 
                 setAlertSeverity('success');   
             }
+            
             setShowModal(false);
             setModalMode(null)
             setSelectedCandidate(null);
@@ -77,17 +86,23 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
         setShowModal(true)
     }
     
-    const handleGetResults = () => {
-        // setVotingResults()
-        const data = [{id: "1", name: "mykyta", voteCount:10}, {id: "2", name: "andrii", voteCount:5}, {id: "2", name: "andrii", voteCount:5}, {id: "2", name: "andrii", voteCount:5}, {id: "2", name: "andrii", voteCount:5}]
-        console.log(votingResults)
-        navigate(`/voter/vote/${electionId}/results`, {state: {results: data}})
+    const handleGetResults = () => { 
         getResults(contractAddress)
-        .then(data => {setVotingResults(data); setVotingResults([{id: "1", name: "mykyta", voteCount:10}, {id: "2", name: "andrii", voteCount:5}])})
+        .then(data => {
+            const updatedResults = data.map((result: any) => ({
+                id: result[0],
+                name: result[1],
+                voteCount: Number(result[2]),
+              }));
+            console.log(updatedResults)
+            setVotingResults(updatedResults)
+            navigate(`/voter/vote/${electionId}/results`, {state: {results: updatedResults}})
+        })
         .catch((error : any) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
-        // updateElection(contractAddress, 'finished')
-        // .then((data) => console.log(data))
-        // .catch((data) => console.log(data))
+        
+        updateElection(contractAddress, 'finished')
+        .then((data) => onStatusChange('finished'))
+        .catch((data) => console.log(data))
     }
 
     const handleOpenReveal = () => {
@@ -96,36 +111,8 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
         .catch((error : any) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
         
         updateElection(contractAddress, 'revealing')
-        .then((data) => console.log(data))
+        .then((data) => onStatusChange('revealing'))
         .catch((data) => console.log(data))
-    }
-
-    const handleGetVotingTimestamps = () => {
-        hasAddressRevealed(contractAddress)
-        .then((result) => {
-            console.log(result)
-        })
-        .catch()
-        // getVotingTimestamps(contractAddress)
-        // .then((result) => {
-        //     console.log(result)
-        //     const startTime = result._startTime
-        //     const endTime = result._endTime
-        //     const revealEndTime = result._revealEndTime
-        //     console.log(startTime)
-        //     console.log(endTime)
-        //     console.log(revealEndTime)
-
-        //     const now = Math.floor(Date.now() / 1000);
-        //     if (now < endTime) {
-        //         console.log("Voting phase ongoing. Time left:", endTime - now, "seconds");
-        //       } else if (now < revealEndTime) {
-        //         console.log("Reveal phase ongoing. Time left:", revealEndTime - now, "seconds");
-        //       } else {
-        //         console.log("Voting and reveal phases are over.");
-        //       }
-        // })
-        // .catch(err => {console.error(err)})
     }
 
     const handleWithdrawToGovernmentBudget = () => {
@@ -155,6 +142,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
                                         name="candidate"
                                         value={candidate.candidate_id}
                                         className="candidate-radio"
+                                        checked={selectedCandidate === candidate.candidate_id}
                                         onChange={() => setSelectedCandidate(candidate.candidate_id)}
                                     />
                                     <div className="candidate-info">
@@ -181,36 +169,45 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role}: Vo
                     </div>
                     <br/>
                     <div className='election-form-buttons-group'>
-                        <StandardButton label="Cast a Vote" className="button-red" onClick={handleCastVote} disabled={!isPoliciesAccepted || status !== 'active'} />
+                        <StandardButton label="Cast a Vote" className="button-red" onClick={handleCastVote} disabled={!isPoliciesAccepted || statusState  !== 'active'} />
                         <StandardButton label="Open Reveal Phase" className="button-blue" onClick={handleOpenReveal} disabled={role !== 'admin'}/>
-                        <StandardButton label="Reveal a Vote" className="button-red" onClick={handleRevealVote} disabled={false}/>
+                        <StandardButton label="Reveal a Vote" className="button-red" onClick={handleRevealVote} disabled={statusState !== 'revealing'}/>
                         <StandardButton label="Get Results" className="button-blue" onClick={handleGetResults} disabled={role !== 'admin'}/>
                         <StandardButton label="Withdraw to Government budget" className="button-blue" onClick={handleWithdrawToGovernmentBudget} disabled={role !== 'admin'}/>
-
-                        {/* TODO: DELETE */}
-                        <StandardButton label="getVotingTimestamps" className="button-blue" onClick={handleGetVotingTimestamps} disabled={role !== 'admin'}/>
                     </div>
-                    {showModal && (
+                    {showModal && (modalMode === 'vote' || modalMode === 'reveal') ? (
                         <div className="modal">
                             <div className="modal-content">
-                                <h3>Enter Salt</h3>
-                                <p>This salt ensures privacy. Save it securely — it’s required to reveal your vote later.</p>
-                                <div className='election-form-input'>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter your salt"
-                                        value={salt}
-                                        onChange={(e) => setSalt(e.target.value)}
-                                    />
-                                </div>
-                                <br />
-                                <div className="election-form-buttons-group">
-                                    <StandardButton label="Confirm Vote" className="button-blue" onClick={handleVoteConfirm}/>
-                                    <StandardButton label="Cancel" className="button-red" onClick={() => setShowModal(false)}/>
-                                </div>
+                            <h3>Enter Salt</h3>
+                            <p>This salt ensures privacy. Save it securely — it’s required to reveal your vote later.</p>
+                            <div className='election-form-input'>
+                                <input
+                                type="text"
+                                placeholder="Enter your salt"
+                                value={salt}
+                                onChange={(e) => setSalt(e.target.value)}
+                                />
+                            </div>
+                            <br />
+                            <div className="election-form-buttons-group">
+                                <StandardButton label="Confirm Vote" className="button-blue" onClick={handleVoteConfirm}/>
+                                <StandardButton label="Cancel" className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
+                            </div>
                             </div>
                         </div>
-                    )}
+                        ) : showModal && modalMode === 'downloadFile' ? (
+                        <div className="modal">
+                            <div className="modal-content">
+                            <h3>Download File with Salt</h3>
+                            <p>Do you want to download your salt file for safekeeping?</p>
+                            <br />
+                            <div className="election-form-buttons-group">
+                                <StandardButton label="Download" className="button-blue" onClick={() => {downloadSaltFile(salt!); setShowModal(false); setModalMode(null);}}/>
+                                <StandardButton label="Cancel" className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
+                            </div>
+                            </div>
+                        </div>
+                        ) : null}
                 </>
             )}
         </>
