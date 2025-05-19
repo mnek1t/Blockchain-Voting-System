@@ -8,6 +8,7 @@ import { useUser } from "../AuthContext";
 import ReferenceButton from '../components/ReferenceButton/ReferenceButton';
 import { Alert, AlertTitle } from "@mui/material";
 import { useTranslation } from "react-i18next";
+
 const VotingPage = () => {
     const {t} = useTranslation();
     const {user} = useUser();
