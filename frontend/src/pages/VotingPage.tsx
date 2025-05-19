@@ -6,7 +6,7 @@ import ElectionsView from "../components/ElectionsView/ElectionsView";
 import { ElectionResponse } from "../types";
 import { useUser } from "../AuthContext";
 import ReferenceButton from '../components/ReferenceButton/ReferenceButton';
-import { Alert, AlertTitle } from "@mui/material";
+import CustomAlert from "../components/CustomAlert/CustomAlert";
 import { useTranslation } from "react-i18next";
 
 const VotingPage = () => {
@@ -33,10 +33,7 @@ const VotingPage = () => {
         <hr/>
         <ReferenceButton label={t("toHomePage")} destination={`/${user && user.role}/home`}/>
         {alertMessage ? 
-            (<Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
-                <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                {alertSeverity !== 'success' && t("contactSupport")}
-            </Alert>) : 
+            (<CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>) : 
             (<ElectionsView elections={elections}/>)
         }
         <Contact/>

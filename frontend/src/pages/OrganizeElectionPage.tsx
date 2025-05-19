@@ -8,8 +8,7 @@ import StandardButton from "../components/StandardButton/StandardButton";
 import { createElection, SolidityCandidates } from "../api/blockchain/ethers";
 import { saveElection } from "../api/offChain/db-api-service"
 import { CandidateRequest, DurationUnit } from "../types";
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import CustomAlert from "../components/CustomAlert/CustomAlert";
 import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
 import { useTranslation } from "react-i18next";
 const OrganizeElectionPage = () => {
@@ -160,10 +159,7 @@ const OrganizeElectionPage = () => {
         <h6>{t("adminMessagePage")}</h6>
         <ReferenceButton label={t("toHomePage")} destination="/admin/home"/>
         <br/><br/>
-        {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
-            <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-            {alertSeverity !== 'success' && t("contactSupport")}
-        </Alert>}
+        {alertMessage && <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>}
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
         <div className="election-title">
             <div className="election-form-input">   

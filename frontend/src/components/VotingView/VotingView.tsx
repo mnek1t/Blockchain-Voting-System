@@ -5,8 +5,7 @@ import { CandidateResponse, ElectionCandidatesResults } from '../../types';
 import StandardButton from '../StandardButton/StandardButton';
 import { vote, revealVote, endElection, getResults, withdrawToGovernmentBudget} from '../../api/blockchain/votingService';
 import { updateElection } from '../../api/offChain/db-api-service';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import CustomAlert from '../CustomAlert/CustomAlert';
 import VotingBarChart from '../VoteBarChart/VoteBarChart';
 import { downloadSaltFile } from '../../utils/utils';
 import { useTranslation } from 'react-i18next';
@@ -134,10 +133,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
                 :  
                 (<>
                     <form>
-                        {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
-                            <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                            {alertSeverity !== 'success' && t("contactSupport")}
-                        </Alert>}
+                        {alertMessage && <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>}
                         <br/>
                         <div><strong>{t("selectCandidate")}</strong></div>
                         <div className="candidate-list">

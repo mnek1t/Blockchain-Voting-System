@@ -10,7 +10,7 @@ import VotingView from "../components/VotingView/VotingView";
 import { formatDate, getTimeLeft } from "../utils/utils";
 import { useUser } from "../AuthContext";
 import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
-import { Alert, AlertTitle } from "@mui/material";
+import CustomAlert from "../components/CustomAlert/CustomAlert";
 import { useTranslation } from "react-i18next";
 
 const VotingDetailPage = () => {
@@ -72,10 +72,9 @@ const VotingDetailPage = () => {
             <ReferenceButton destination="/votings" label={t("toVotingList")}/>
             {alertMessage ? 
                 (
-                    <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
-                        <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                        {alertSeverity !== 'success' && t("contactSupport")}
-                    </Alert>) : 
+                    <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>
+                ) 
+                    : 
                 (
                     <>
                         <h6>{t("userViewMessage", { role: translatedRole })}</h6>
