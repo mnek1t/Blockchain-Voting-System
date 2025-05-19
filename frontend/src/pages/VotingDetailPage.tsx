@@ -21,7 +21,6 @@ const VotingDetailPage = () => {
     const [status, setStatus] = useState<string | undefined>();
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const [alertSeverity, setAlertSeverity] = useState<'error' | 'success' | 'info' | 'warning'>('error');
-    
     useEffect(() => {
         if(!id) return;
 
