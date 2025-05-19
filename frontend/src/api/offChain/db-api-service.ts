@@ -54,7 +54,19 @@ const getElectionAll = async() => {
             throw new Error("Elections retreival failed");
         }
     } catch (error) {
-        console.error(error);
+        if (axios.isAxiosError(error)) {
+            const status = error.response?.status;
+            const message = error.response?.data?.error || error.message || "Error fetching user data";
+            throw new Error(
+                status === 401
+                    ? "You are not authorized. Please log in again."
+                    : status === 500
+                    ? "Server error. Please try again later."
+                    : message
+            );
+        } else {
+            throw new Error("An unexpected error occurred while fetching user data.");
+        }
     }
 }
 export {saveElection, getElectionById, getElectionAll, updateElection}

@@ -22,13 +22,12 @@ function App() {
         <Route path="/eparaksts" element={<EparakstsLoginPage />} />
         <Route path="/basic" element={<BasicLoginPage />} />
         <Route path="/inbank" element={<InternetBankingPage />} />
-        <Route path="/election/prep" element={<OrganizeElectionPage />} />
+        <Route path="/election/prep" element={<PrivateRoute requiredRoles={['admin']}><OrganizeElectionPage /></PrivateRoute>} />
         <Route path="/admin/home" element={<PrivateRoute requiredRoles={['admin']}><AdminHomePage /></PrivateRoute>} />
         <Route path="/voter/home" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VoterHomePage /></PrivateRoute>} />
         <Route path="/votings" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingPage /></PrivateRoute>} />
         <Route path="/voter/vote/:id" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingDetailPage /></PrivateRoute>} />
         <Route path="/voter/vote/:id/results" element={<PrivateRoute requiredRoles={['admin', 'voter']}><VotingResultPage /></PrivateRoute>} />
-
       </Routes>
     </BrowserRouter>
   );
