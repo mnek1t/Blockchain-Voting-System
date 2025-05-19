@@ -1,21 +1,23 @@
+import { TFunction } from 'i18next';
+
 export function formatDate(timestamp: string | undefined) : string {
   if(!timestamp) return ''
   return new Date(timestamp).toLocaleString();
 };
 
-export const getTimeLeft = (time: string | undefined) => {
-  if(!time) return "Voting ended"
+export const getTimeLeft = (time: string | undefined, t: TFunction) => {
+  if(!time) return t("votingEnded")
   const now = new Date();
   const end = new Date(time);
   const diff = end.getTime() - now.getTime();
 
-  if (diff <= 0) return "Voting ended";
+  if (diff <= 0) return t("votingEnded");
 
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  return `${days}d ${hours}h ${minutes}m left`;
+  return t("timeLeft", { days, hours, minutes });
 };
 
 export function fileToBase64(file: File): Promise<string> {

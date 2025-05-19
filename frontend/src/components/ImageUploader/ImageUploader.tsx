@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import uploadImage from '../../assets/upload-svgrepo-com.svg';
 import ImagePreview from './ImagePreview';
 import './image-uploader.css'
@@ -21,8 +22,8 @@ const ImageUploader = (props: ImageUploaderProps) => {
                     ) : (
                     <>
                         <img className="upload-image-logo" src={uploadImage} alt="upload" />
-                        <h3>Click box to upload</h3>
-                        <p>Maximum file size {props.maxSizeMB}mb</p>
+                        <h3>{t("clickBoxToUpload")}</h3>
+                        <p>{t("maxFileSize")} {props.maxSizeMB}mb</p>
                     </>
                 )}
 

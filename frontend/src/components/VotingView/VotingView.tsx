@@ -9,6 +9,8 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import VotingBarChart from '../VoteBarChart/VoteBarChart';
 import { downloadSaltFile } from '../../utils/utils';
+import { useTranslation } from 'react-i18next';
+
 interface VotingViewProps {
     electionId: string,
     candidates: CandidateResponse[],
@@ -18,6 +20,7 @@ interface VotingViewProps {
     onStatusChange: (newValue: string) => void;
 }
 const VotingView = ({ electionId, candidates, contractAddress, status, role, onStatusChange}: VotingViewProps) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [statusState, setStatusState] = useState(status);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -33,7 +36,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
     }, [status])
     const handleCastVote = () => {
         if(!selectedCandidate) {
-            setAlertMessage('Please select your candidate!')
+            setAlertMessage(t("warningSelectCandidate"))
             setAlertSeverity('warning');
             return; 
         }
@@ -43,12 +46,13 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
     const handleVoteConfirm = async () => {
         try {
             if(!salt) {
-                alert('Please enter your salt');
+                setAlertMessage(t("please") + t("enterSalt").charAt(0).toLowerCase() + t("enterSalt").slice(1)); 
+                setAlertSeverity('success');
                 return;
             }
             if(modalMode === 'vote') {
                 await vote(contractAddress, selectedCandidate!, salt!)   
-                setAlertMessage("Vote is submitted!"); 
+                setAlertMessage(t("successVoteSubmitted")); 
                 setAlertSeverity('success');
                 setModalMode('downloadFile');
                 return;
@@ -56,7 +60,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
             if(modalMode === 'reveal') {
                 await revealVote(contractAddress, selectedCandidate!, salt!)
                 
-                setAlertMessage("Vote is revealed!"); 
+                setAlertMessage(t("successVoteRevealed")); 
                 setAlertSeverity('success');   
             }
             
@@ -78,7 +82,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
 
     const handleRevealVote = () => {
         if(!selectedCandidate) {
-            setAlertMessage('Please select your candidate that you voted')
+            setAlertMessage(t("warningSelectCandidate"))
             setAlertSeverity('warning');
             return; 
         }
@@ -97,27 +101,29 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
             console.log(updatedResults)
             setVotingResults(updatedResults)
             navigate(`/voter/vote/${electionId}/results`, {state: {results: updatedResults}})
-        })
+
+            updateElection(contractAddress, 'finished')
+                .then(() => onStatusChange('finished'))
+                .catch((error) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
+            })
         .catch((error : any) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
-        
-        updateElection(contractAddress, 'finished')
-        .then((data) => onStatusChange('finished'))
-        .catch((data) => console.log(data))
     }
 
     const handleOpenReveal = () => {
         endElection(contractAddress)
-        .then(() => {setAlertMessage("Election is set to Revealing stage!"); setAlertSeverity('success');})
+        .then(() => {
+            setAlertMessage(t("sucessOpenRevealPhase")); 
+            setAlertSeverity('success');
+            updateElection(contractAddress, 'revealing')
+                .then(() => onStatusChange('revealing'))
+                .catch((error) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
+            })
         .catch((error : any) => {setAlertMessage(error?.reason); setAlertSeverity('error'); return;})
-        
-        updateElection(contractAddress, 'revealing')
-        .then((data) => onStatusChange('revealing'))
-        .catch((data) => console.log(data))
     }
 
     const handleWithdrawToGovernmentBudget = () => {
         withdrawToGovernmentBudget(contractAddress)
-        .then(data => {setAlertMessage("Transaction successfull! Please check government account."); setAlertSeverity('success');})
+        .then(() => {setAlertMessage(t("successWithdrawTransaction")); setAlertSeverity('success');})
         .catch((error : any) => {setAlertMessage(error?.reason); setAlertSeverity('error');})
     }
     
@@ -130,10 +136,10 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
                     <form>
                         {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
                             <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                            {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+                            {alertSeverity !== 'success' && t("contactSupport")}
                         </Alert>}
                         <br/>
-                        <div><strong>Select a candidate:</strong></div>
+                        <div><strong>{t("selectCandidate")}</strong></div>
                         <div className="candidate-list">
                             {candidates?.map((candidate) => (
                                 <label className="candidate-card" key={candidate.candidate_id}>
@@ -155,7 +161,7 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
                                         )}
                                         <div>
                                             <h3>{candidate.name}</h3>
-                                            <p><strong>Party:</strong> {candidate.party}</p>
+                                            <p><strong>{t("party")}:</strong> {candidate.party}</p>
                                         </div>
                                     </div>
                                 </label>
@@ -164,46 +170,46 @@ const VotingView = ({ electionId, candidates, contractAddress, status, role, onS
                         <br/>
                     </form>
                     <div className="policy-check-container">
-                        <label htmlFor="acceptDeposit" className='policy-label'>I certify that I accept all policies and deposit conditions.</label>
+                        <label htmlFor="acceptDeposit" className='policy-label'>{t("policiesAgreement")}</label>
                         <input id="acceptDeposit" className="policy-checkbox" type="checkbox" checked={isPoliciesAccepted} onChange={(e) => setIsPoliciesAccepted(e.target.checked)}></input>
                     </div>
                     <br/>
                     <div className='election-form-buttons-group'>
-                        <StandardButton label="Cast a Vote" className="button-red" onClick={handleCastVote} disabled={!isPoliciesAccepted || statusState  !== 'active'} />
-                        <StandardButton label="Open Reveal Phase" className="button-blue" onClick={handleOpenReveal} disabled={role !== 'admin'}/>
-                        <StandardButton label="Reveal a Vote" className="button-red" onClick={handleRevealVote} disabled={statusState !== 'revealing'}/>
-                        <StandardButton label="Get Results" className="button-blue" onClick={handleGetResults} disabled={role !== 'admin'}/>
-                        <StandardButton label="Withdraw to Government budget" className="button-blue" onClick={handleWithdrawToGovernmentBudget} disabled={role !== 'admin'}/>
+                        <StandardButton label={t("vote")} className="button-red" onClick={handleCastVote} disabled={!isPoliciesAccepted || statusState  !== 'active'} />
+                        <StandardButton label={t("openRevealPhase")} className="button-blue" onClick={handleOpenReveal} disabled={role !== 'admin'}/>
+                        <StandardButton label={t("revealVote")} className="button-red" onClick={handleRevealVote} disabled={statusState !== 'revealing'}/>
+                        <StandardButton label={t("getResults")} className="button-blue" onClick={handleGetResults} disabled={role !== 'admin'}/>
+                        <StandardButton label={t("withdrawToGovernment")} className="button-blue" onClick={handleWithdrawToGovernmentBudget} disabled={role !== 'admin'}/>
                     </div>
                     {showModal && (modalMode === 'vote' || modalMode === 'reveal') ? (
                         <div className="modal">
                             <div className="modal-content">
-                            <h3>Enter Salt</h3>
-                            <p>This salt ensures privacy. Save it securely — it’s required to reveal your vote later.</p>
+                            <h3>{t("enterSalt")}</h3>
+                            <p>{t("saltDescription")}</p>
                             <div className='election-form-input'>
                                 <input
                                 type="text"
-                                placeholder="Enter your salt"
+                                placeholder={t("enterSalt")}
                                 value={salt}
                                 onChange={(e) => setSalt(e.target.value)}
                                 />
                             </div>
                             <br />
                             <div className="election-form-buttons-group">
-                                <StandardButton label="Confirm Vote" className="button-blue" onClick={handleVoteConfirm}/>
-                                <StandardButton label="Cancel" className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
+                                <StandardButton label={t("confirm")}className="button-blue" onClick={handleVoteConfirm}/>
+                                <StandardButton label={t("cancel")}  className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
                             </div>
                             </div>
                         </div>
                         ) : showModal && modalMode === 'downloadFile' ? (
                         <div className="modal">
                             <div className="modal-content">
-                            <h3>Download File with Salt</h3>
-                            <p>Do you want to download your salt file for safekeeping?</p>
+                            <h3>{t("downloadFileSalt")}</h3>
+                            <p>{t("downloadFileSaltDescription")}</p>
                             <br />
                             <div className="election-form-buttons-group">
-                                <StandardButton label="Download" className="button-blue" onClick={() => {downloadSaltFile(salt!); setShowModal(false); setModalMode(null);}}/>
-                                <StandardButton label="Cancel" className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
+                                <StandardButton label={t("confirm")} className="button-blue" onClick={() => {downloadSaltFile(salt!); setShowModal(false); setModalMode(null);}}/>
+                                <StandardButton label={t("cancel")} className="button-red" onClick={() => {setShowModal(false); setModalMode(null);}}/>
                             </div>
                             </div>
                         </div>

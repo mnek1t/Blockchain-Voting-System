@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from 'axios'
 import { BasicLoginCredentials } from './blockchain-api-definitions'
 
-const basicLogin = async ({personalNumber, password}: BasicLoginCredentials) => {
+const basicLogin = async ({ personalNumber, password }: BasicLoginCredentials) => {
     try{
-        const response : AxiosResponse =  await axios.post(process.env.REACT_APP_NODE_URL + "/api/auth/login", {personalNumber, password},  { withCredentials: true });
+        const response : AxiosResponse =  await axios.post(process.env.REACT_APP_NODE_URL + "/api/auth/login", {personalNumber, password}, { withCredentials: true });
         if(response.status === 201) {
             return response.data;
         } else {
@@ -12,20 +12,19 @@ const basicLogin = async ({personalNumber, password}: BasicLoginCredentials) => 
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
             const status = error.response?.status;
-            const message = error.response?.data?.error || error.message || "Login error";
-            console.error("Login error:", { status, message });
-            throw new Error(
-                status === 401
-                    ? "Invalid personal number or password."
-                    : status === 500
-                    ? "Server error. Please try again later."
-                    : message
-            );
-        } else {
-            console.error("Unexpected login error:", error);
-            throw new Error("An unexpected error occurred during login.");
-        }
+            const backendMessage = error.response?.data?.error;
+        if (status === 401 && backendMessage === 'Invalid credentials') {
+            throw new Error("error.invalidCredentials");
+        } else if (status === 500 && backendMessage === 'Login failed') {
+            throw new Error("error.serverError");
+      } else {
+        console.error("Unhandled backend message:", backendMessage);
+        throw new Error("error.unexpected");
+      }
+    } else {
+      throw new Error("error.unexpected");
     }
+  }
 }
 
 const logout = async () => {

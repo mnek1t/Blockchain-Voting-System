@@ -4,6 +4,7 @@ import StandardButton from '../StandardButton/StandardButton';
 import { useTranslation } from 'react-i18next';
 const Header = () => {
     const { i18n } = useTranslation();
+    const {t} = useTranslation();
     return(
         <nav className="login-header">
             <div className="login-header-col-50">
@@ -12,7 +13,7 @@ const Header = () => {
                         <img src={logo} alt="Logo" />
                     </div>
                     <div className="login-header-title-holder">
-                        <h1>Blockchain Voting System</h1>
+                        <h1>{t("appName")}</h1>
                     </div>
                 </div>
             </div>

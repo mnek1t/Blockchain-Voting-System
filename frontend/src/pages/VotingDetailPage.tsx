@@ -11,7 +11,10 @@ import { formatDate, getTimeLeft } from "../utils/utils";
 import { useUser } from "../AuthContext";
 import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
 import { Alert, AlertTitle } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
 const VotingDetailPage = () => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const [election, setElection] = useState<ElectionResponse>();
     const [connectedAccount, setConnectedAccount] = useState<string>();
@@ -40,7 +43,7 @@ const VotingDetailPage = () => {
         if (!election?.end_time) return;
 
         const update = () => {
-            setTimeLeft(getTimeLeft(election.end_time));
+            setTimeLeft(getTimeLeft(election.end_time, t));
         };
 
         update();
@@ -61,23 +64,24 @@ const VotingDetailPage = () => {
     const onStatusChange = (newValue: string) => {
         setStatus(newValue);
     }
+    const translatedRole = t(`roles.${user?.role}`);
     return(
         <div className="app-container">
             <Header/>
             <hr/>
-            <ReferenceButton destination="/votings" label="To voting list"/>
+            <ReferenceButton destination="/votings" label={t("toVotingList")}/>
             {alertMessage ? 
                 (
                     <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
                         <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                        {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+                        {alertSeverity !== 'success' && t("contactSupport")}
                     </Alert>) : 
                 (
                     <>
-                        <h6>This is {user && user?.role.charAt(0).toUpperCase() + user?.role.slice(1)} view. Please read instructions before voting</h6>
-                        <h3>Metamask account connected: {connectedAccount}</h3>
-                        <StandardButton label="Connect Metamask" className="button-blue" onClick={handleConnectWallet}/>
-                        <h5>Voting will be finished on {formatDate(election?.end_time)}. {timeLeft}</h5>
+                        <h6>{t("userViewMessage", { role: translatedRole })}</h6>
+                        <h3>{t("metamaskAccount")}: {connectedAccount}</h3>
+                        <StandardButton label={t("connectMetamask")} className="button-blue" onClick={handleConnectWallet}/>
+                        <h5>{t("votingIsFinishedOn")} {formatDate(election?.end_time)}. {timeLeft}</h5>
                         {election && <VotingView electionId={election.election_id} candidates={election.Candidates} contractAddress={election.contract_address} status={election.status} role={user?.role} onStatusChange={onStatusChange}/>}
                         <Contact/>
                     </>

@@ -11,7 +11,9 @@ import { CandidateRequest, DurationUnit } from "../types";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import ReferenceButton from "../components/ReferenceButton/ReferenceButton";
+import { useTranslation } from "react-i18next";
 const OrganizeElectionPage = () => {
+    const {t} = useTranslation();
     const [candidates, setCandidates] = useState<CandidateRequest[]>([{
         id: uuidv4(),
         name: "",
@@ -93,7 +95,7 @@ const OrganizeElectionPage = () => {
 
     function handleAnnounceElection() {
         if(!title || title === '') {
-            setAlertMessage("Provide a title for election.")
+            setAlertMessage(t("titleRequired"))
             setAlertSeverity('warning');
             return;
         }
@@ -102,12 +104,12 @@ const OrganizeElectionPage = () => {
         //     return;
         // }
         if(candidates.length < 2) {
-            setAlertMessage("Please add at least 2 candidates.")
+            setAlertMessage(t("candidatesRequired"))
             setAlertSeverity('warning');
             return;
         }
         if (candidates.some(c => !c.name || !c.party)) {
-            setAlertMessage('Please fill out all candidate fields.')
+            setAlertMessage(t("candidateDataRequired"))
             setAlertSeverity('warning');
             return;
         }
@@ -137,11 +139,11 @@ const OrganizeElectionPage = () => {
             })
             .then((data) => {
                 console.log(data);
-                setAlertMessage('Election is announced and saved!')
+                setAlertMessage(t("successElectionCreation"))
                 setAlertSeverity('success');
             })
             .catch((error : any) => {
-                setAlertMessage('Error during election save')
+                setAlertMessage(t("errorElectionCreation"))
                 setAlertSeverity('error');
             })
         })
@@ -155,64 +157,64 @@ const OrganizeElectionPage = () => {
     <div className="app-container">
         <Header/>
         <hr/>
-        <h6>This is Admin view with strict access. Please read instructions before starting the election. </h6>
-        <ReferenceButton label='To home page' destination="/admin/home"/>
+        <h6>{t("adminMessagePage")}</h6>
+        <ReferenceButton label={t("toHomePage")} destination="/admin/home"/>
         <br/><br/>
         {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
             <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-            {alertSeverity !== 'success' && 'Please contact support team in case you have some questions!'}
+            {alertSeverity !== 'success' && t("contactSupport")}
         </Alert>}
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
         <div className="election-title">
             <div className="election-form-input">   
-                <label htmlFor="election-title-input">Title</label>
+                <label htmlFor="election-title-input">{t("title")}</label>
                 <input id="election-title-input" value={title ? title : ""} onChange={(e) => setTitle(e.target.value)}></input>
             </div>
         </div>
         <div className="election-form-dates">
             <div className="election-form-input">
-                <label htmlFor="duration-select">Voting Duration</label>
+                <label htmlFor="duration-select">{t("votingDuration")}</label>
                 <select
                     id="duration-select"
                     value={duration}
                     onChange={(e) => setDuration(parseInt(e.target.value))}
                 >
-                    <option value={86400}>1 Day</option>
-                    <option value={604800}>1 Week</option>
-                    <option value={2628000}>1 Month</option>
-                    <option value={0}>Custom (enter manually)</option>
+                    <option value={86400}>1 {t("day")}</option>
+                    <option value={604800}>1 {t("week")}</option>
+                    <option value={2628000}>1 {t("month")}</option>
+                    <option value={0}>{t("customDuration")}</option>
                 </select>
             </div>
             {
                 duration === 0 && 
                 <div className="election-custom-duration">
                     <div className="election-form-input">   
-                        <label htmlFor="election-custom-duration-input">Unit</label>
+                        <label htmlFor="election-custom-duration-input">{t("unit")}</label>
                         <input id="election-custom-duration-input" type="number" value={customDuration} onChange={(e) => setCustomDuration(Number(e.target.value))} min={1} max={10} step={1}></input>
                     </div>
                     <div className="election-form-input">
-                        <label htmlFor="duration-select">Measurement</label>
+                        <label htmlFor="duration-select">{t("measurement")}</label>
                         <select
                             id="duration-select"
                             value={durationMeasurement}
                             onChange={(e) => setDurationMeasurement(e.target.value as DurationUnit)}
                         >
-                            <option value={'Days'}>{'Day' + (customDuration === 1 ? '' : 's')}</option>
-                            <option value={'Weeks'}>{'Week' + (customDuration === 1 ? '' : 's')}</option>
-                            <option value={'Months'}>{'Month' + (customDuration === 1 ? '' : 's')}</option>
+                            <option value={'Days'}>{t("day") + (customDuration === 1 ? '' : 's')}</option>
+                            <option value={'Weeks'}>{t("week") + (customDuration === 1 ? '' : 's')}</option>
+                            <option value={'Months'}>{t("month")  + (customDuration === 1 ? '' : 's')}</option>
                         </select>
                     </div>
                 </div> 
             }
             <div className="election-form-input">
-                <label htmlFor="reveal-duration-select">Reveal Stage Duration</label>
+                <label htmlFor="reveal-duration-select">{t("revealStageDuration")}</label>
                 <select
                     id="reveal-duration-select"
                     value={revealDuration}
                     onChange={(e) => setRevealDuration(parseInt(e.target.value))}
                 >
-                    <option value={86400}>1 Day</option>
-                    <option value={604800}>1 Week</option>
+                    <option value={86400}>1 {t("day")}</option>
+                    <option value={604800}>1 {t("week")}</option>
                 </select>
             </div>
         </div>
@@ -227,20 +229,20 @@ const OrganizeElectionPage = () => {
                         />
                         <div className="election-form-input-group">
                         <div className="election-form-input">
-                            <label>Name</label>
+                            <label>{t("name")}</label>
                             <input value={candidate.name} onChange={(e) => handleCandidateChange(candidate.id, "name", e.target.value)}/>
                         </div>
                         <div className="election-form-input">
-                            <label>Party</label>
+                            <label>{t("party")}</label>
                             <input value={candidate.party} onChange={(e) => handleCandidateChange(candidate.id, "party", e.target.value)}/>
                         </div>
                         </div>
                     </div>
                 ))}
             <div className="election-form-buttons-group">
-                <StandardButton label="Add Candidate" className="button-blue" type="button" onClick={handleAddCandidate}></StandardButton>
-                <StandardButton label="Save Draft" type="button" onClick={handleSaveDraft} />  
-                <StandardButton label="Announce Election" type="submit" className="button-red" onClick={handleAnnounceElection} />    
+                <StandardButton label={t("addCandidate")} className="button-blue" type="button" onClick={handleAddCandidate}></StandardButton>
+                <StandardButton label={t("saveDraft")} type="button" onClick={handleSaveDraft} />  
+                <StandardButton label={t("announceElection")} type="submit" className="button-red" onClick={handleAnnounceElection} />    
             </div>
         </form>
         
