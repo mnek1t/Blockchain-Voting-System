@@ -7,7 +7,7 @@ import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 interface PrivateRouteProps {
     children: JSX.Element;
     requiredRoles: string[];
-  }
+}
 
 const PrivateRoute = ({ children, requiredRoles }: PrivateRouteProps) => {
     const [user, setUser] = useState<AuthUserDataResponse | null>();
@@ -27,7 +27,8 @@ const PrivateRoute = ({ children, requiredRoles }: PrivateRouteProps) => {
             setLoading(false)
         })  
     }, [])
-    if (loading) return  <LoadingSpinner innertText='test' loading={true}/>;
+    if (loading) return  
+    <div style={{position: 'fixed'}}><LoadingSpinner innertText='Loading' loading={true}/></div>;
     if (!user) return <Navigate to="/" replace />;
 
     if (!requiredRoles.includes(user.role)) return <Navigate to="/unauthorized" replace />;

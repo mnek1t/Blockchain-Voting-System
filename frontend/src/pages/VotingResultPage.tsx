@@ -6,8 +6,9 @@ import { ElectionCandidatesResults } from '../types';
 import { useEffect, useState } from 'react';
 import ReferenceButton from '../components/ReferenceButton/ReferenceButton';
 import LoadingSpinner from '../components/LoadingSpinner/LoadingSpinner';
-
+import { useTranslation } from 'react-i18next';
 const VotingResultPage = () => {
+    const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const VotingResultPage = () => {
             <Header />
             <hr />
             <br />
-            <ReferenceButton label='To home page'/>
+            <ReferenceButton label={t("toHomePage")}/>
             <br /><br />
             {isLoading ? (
                 <LoadingSpinner innertText="Loading Results..." loading={true} />

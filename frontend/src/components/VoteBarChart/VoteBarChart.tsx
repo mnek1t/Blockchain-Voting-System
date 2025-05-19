@@ -1,16 +1,18 @@
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import { ElectionCandidatesResults } from "../../types";
+import { useTranslation } from "react-i18next";
 interface VotingBarChartProps {
     results: ElectionCandidatesResults[]
 }
 const VotingBarChart = ({results}: VotingBarChartProps) => {
+    const { t } = useTranslation();
     const chartRef = useRef<HTMLCanvasElement | null>(null);
     let delayed = false;
     const transformResultsToChartData = (results : ElectionCandidatesResults[]) => ({
         labels: results.map(c => c.name), // x-axis labels
         datasets: [{
-          label: 'Votes Received',
+          label: t("votesReceived"),
           data: results.map(c => c.voteCount),
           backgroundColor: results.map(() => '#2f4984'), //#012169
           borderColor: results.map(() => '#2f4984'),
@@ -46,14 +48,14 @@ const VotingBarChart = ({results}: VotingBarChartProps) => {
                 x: {
                   title: {
                     display: true,
-                    text: 'Candidates'
+                    text: t("candidates")
                   }
                 },
                 y: {
                   beginAtZero: true,
                   title: {
                     display: true,
-                    text: 'Vote Count'
+                    text: t("voteCount")
                   }
                 }
               }

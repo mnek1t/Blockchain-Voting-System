@@ -1,36 +1,44 @@
 import usefulData from "./usefulData";
-import "./usefulInformation.css"
+import "./usefulInformation.css";
+import { Trans, useTranslation } from "react-i18next";
+import { JSX } from "react";
+
 interface LinkData {
-    url: string;
-    label: string;
-  }
+  url: string;
+  label: string;
+}
 
 const UsefulInformation = () => {
-    const renderTextWithInternalReferences = (text: string, links: LinkData[] | null) => {
-        if(!links || links.length === 0) return text;
-        let updText = text;
-        links.forEach(link => {
-            const regex = new RegExp(`<a>${link.label}</a>`, 'g');
-            updText = updText.replace(regex, `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`);
-        })
+  const { t } = useTranslation();
 
-        return <span dangerouslySetInnerHTML={{ __html: updText }} />;
-    }
+  const renderTextWithLinks = (key: string, links: LinkData[] | null) => {
+    if (!links || links.length === 0) return t(key);
 
-    return(
-        <div className="usefulinfo-container">
-            <h2>Useful Information</h2>
-            <ul>
-                {usefulData.map((item, index) => (
-                    <>
-                        <li key={index}>{renderTextWithInternalReferences(item.text, item.links)}</li>
-                        <hr/>
-                    </>
-                ))}
-            </ul>
-            <br/><br/>
-        </div>
-    );
-}
+    const components: Record<string, JSX.Element> = {};
+    links.forEach((link, index) => {
+      components[`link${index + 1}`] = (
+        <a key={index} href={link.url} target="_blank" rel="noopener noreferrer">
+          {link.label}
+        </a>
+      );
+    });
+
+    return <Trans i18nKey={key} components={components} />;
+  };
+
+  return (
+    <div className="usefulinfo-container">
+      <h2>{t("usfInfo")}</h2>
+      <ul>
+        {usefulData.map((item, index) => (
+          <li key={index}>
+            {renderTextWithLinks(item.translationKey, item.links)}
+            <hr />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default UsefulInformation;

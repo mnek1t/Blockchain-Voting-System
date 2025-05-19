@@ -5,10 +5,11 @@ import cookiePolicyLogo from "../../assets/user-shield-svgrepo-com.svg"
 import termsOfUseLogo from "../../assets/user-pen-svgrepo-com.svg"
 import becomeUserLogo from "../../assets/user-plus-svgrepo-com.svg"
 import glassesLogo from "../../assets/glasses-svgrepo-com.svg"
-
+import { useTranslation } from "react-i18next";
 import processPersonalDataLogo from "../../assets/user-lock-alt-1-svgrepo-com.svg"
 
 const Contact = () => {
+    const {t} = useTranslation();
     return(
         <footer className="footer-layout">
             <div><hr/></div>
@@ -20,24 +21,24 @@ const Contact = () => {
                     </div>
                     <div className="footer-item">
                         <img src={termsOfUseLogo} alt="phone"></img>
-                        <a href="#">Terms of use</a>
+                        <a href="#">{t("termsOfUse")}</a>
                     </div>
                     <div className="footer-item">
                         <img src={processPersonalDataLogo} alt="phone"></img>
-                        <a href="#">Processing personal data in the SRS</a>
+                        <a href="#">{t("SRS")}</a>
                     </div>
                     
                     <div className="footer-item">
                         <img src={cookiePolicyLogo} alt="phone"></img>
-                        <a href="#">Cookie Use Policy</a>
+                        <a href="#">{t("cookieUsePolicy")}</a>
                     </div>
                     <div className="footer-item">
                         <img src={becomeUserLogo} alt="phone"></img>
-                        <a href="#">Become a user</a>
+                        <a href="#">{t("becomeUser")}</a>
                     </div>
                     <div className="footer-item">
                         <img src={glassesLogo} alt="phone"></img>
-                        <a href="#">Accessibility</a>
+                        <a href="#">{t("accessibility")}</a>
                     </div>
                 </div>
                 <div className="footer-right">
@@ -49,7 +50,7 @@ const Contact = () => {
             <div><hr/></div>
 
             <div className="bvs-version">
-                Version 1.0.0,&nbsp;  
+                {t('version')} 1.0.0,&nbsp;  
                 <a href="http://www.vid.gov.lv" target="_blank" rel="noreferrer">www.vid.gov.lv</a>    
             </div>
         </footer>
