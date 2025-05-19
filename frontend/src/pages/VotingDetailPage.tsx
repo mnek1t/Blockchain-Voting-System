@@ -72,7 +72,7 @@ const VotingDetailPage = () => {
             <ReferenceButton destination="/votings" label={t("toVotingList")}/>
             {alertMessage ? 
                 (
-                    <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)} t={t}/>
+                    <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>
                 ) 
                     : 
                 (

@@ -159,7 +159,7 @@ const OrganizeElectionPage = () => {
         <h6>{t("adminMessagePage")}</h6>
         <ReferenceButton label={t("toHomePage")} destination="/admin/home"/>
         <br/><br/>
-        {alertMessage && <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)} t={t}/>}
+        {alertMessage && <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>}
         <form className="election-form-container" onSubmit={(e) => {e.preventDefault()}}>
         <div className="election-title">
             <div className="election-form-input">   
