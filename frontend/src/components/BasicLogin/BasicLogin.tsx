@@ -5,9 +5,8 @@ import { useState } from 'react';
 import { BasicLoginCredentials } from '../../api/auth/blockchain-api-definitions';
 import { useNavigate } from 'react-router-dom';
 import ReferenceButton from '../ReferenceButton/ReferenceButton';
-import { Alert } from '@mui/material';
-import AlertTitle from '@mui/material/AlertTitle';
 import { useTranslation } from 'react-i18next';
+import CustomAlert from '../CustomAlert/CustomAlert';
 const BasicLogin = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -47,10 +46,7 @@ const BasicLogin = () => {
             <div>
                 <ReferenceButton label={t('toLoginOptionsPage')}/>
             </div>
-            {alertMessage && <Alert severity={alertSeverity} onClose={() => {setAlertMessage(null)}}>
-                <AlertTitle><strong>{alertMessage}</strong></AlertTitle>
-                {alertSeverity !== 'success' && t('contactSupport')}
-            </Alert>}
+            {alertMessage && <CustomAlert alertMessage={alertMessage} alertSeverity={alertSeverity} setAlertMessage={() => setAlertMessage(null)}/>}
             <h3>{t("connectTo")}</h3>
             <form className="basic-login-form" onSubmit={(e) => handleConnectTo(e)}>
                 <div className='form-input'>
